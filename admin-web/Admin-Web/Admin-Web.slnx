@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="admin-web.client/admin-web.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Admin-Web.Server/Admin-Web.Server.csproj" />
+</Solution>
