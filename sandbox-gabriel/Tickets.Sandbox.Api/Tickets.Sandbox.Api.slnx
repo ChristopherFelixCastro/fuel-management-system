@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Tickets.Sandbox.Api/Tickets.Sandbox.Api.csproj" />
+  <Project Path="Tickets.Sandbox.Tests/Tickets.Sandbox.Tests.csproj" />
+</Solution>
