@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
     {
         // ---- Configuración fuertemente tipada ----
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.Configure<QrSecurityOptions>(configuration.GetSection(QrSecurityOptions.SectionName));
 
         // ---- Persistencia ----
         var connectionString = configuration.GetConnectionString("Default");
@@ -40,6 +41,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<IClosureService, ClosureService>();
         services.AddScoped<IRequestService, RequestService>();
+        services.AddScoped<IQrCodeService, QrCodeService>();
+        services.AddScoped<ITicketService, TicketService>();
 
         return services;
     }

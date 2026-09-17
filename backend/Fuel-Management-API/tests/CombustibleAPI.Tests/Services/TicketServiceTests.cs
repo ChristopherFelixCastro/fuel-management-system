@@ -11,32 +11,231 @@ namespace CombustibleAPI.Tests.Services;
 
 public class TicketServiceTests
 {
+    private const string RawToken = "test-raw-token";
+    private const string TokenHash = "test-token-hash";
+    private const string Signature =
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
     private static AppDbContext CreateInMemoryContext()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options =
+            new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(
+                    databaseName: Guid.NewGuid().ToString())
+                .Options;
+
         return new AppDbContext(options);
     }
 
     private class FakeAuditService : IAuditService
     {
-        public Task RegistrarAsync(Guid? usuarioId, string accion, string entidad, string? entidadId,
-            string? ipAddress, object? datosAnteriores, object? datosNuevos, CancellationToken ct) => Task.CompletedTask;
+        public Task RegistrarAsync(
+            Guid? usuarioId,
+            string accion,
+            string entidad,
+            string? entidadId,
+            string? ipAddress,
+            object? datosAnteriores,
+            object? datosNuevos,
+            CancellationToken ct)
+            => Task.CompletedTask;
+    }
+
+    private class FakeCurrentUserService : ICurrentUserService
+    {
+        public Guid? UsuarioId { get; set; } = Guid.NewGuid();
+
+        public string? Rol { get; set; } = "DESPACHADOR";
+
+        public Guid? EstacionId { get; set; }
+
+        public string? IpAddress { get; set; } = "127.0.0.1";
+    }
+
+    private class FakeQrCodeService : IQrCodeService
+    {
+        public QrSecurityResult GenerateQrSecurityData(
+            Guid ticketId)
+        {
+            var payload = BuildPayload(ticketId);
+
+            return new QrSecurityResult(
+                RawToken,
+                TokenHash,
+                Signature,
+                payload);
+        }
+
+        public QrSecurityResult RebuildQrSecurityData(
+            Guid ticketId)
+        {
+            return GenerateQrSecurityData(ticketId);
+        }
+
+        public bool VerifySignature(
+            Guid ticketId,
+            string rawToken,
+            string signature)
+        {
+            return rawToken == RawToken &&
+                   signature == Signature;
+        }
+
+        public bool VerifyTokenHash(
+            string rawToken,
+            string storedHash)
+        {
+            return rawToken == RawToken &&
+                   storedHash == TokenHash;
+        }
+
+        public string HashToken(string rawToken)
+        {
+            return TokenHash;
+        }
+
+        public byte[] GenerateQrImagePng(
+            string qrPayload)
+        {
+            return [0x89, 0x50, 0x4E, 0x47];
+        }
+
+        public (
+            Guid TicketId,
+            string RawToken,
+            string Signature)?
+            ParsePayload(string qrPayload)
+        {
+            try
+            {
+                using var document =
+                    System.Text.Json.JsonDocument.Parse(
+                        qrPayload);
+
+                var root = document.RootElement;
+
+                if (!root.TryGetProperty(
+                        "ticketId",
+                        out var idElement) ||
+                    !root.TryGetProperty(
+                        "token",
+                        out var tokenElement) ||
+                    !root.TryGetProperty(
+                        "sig",
+                        out var signatureElement))
+                {
+                    return null;
+                }
+
+                if (!Guid.TryParse(
+                        idElement.GetString(),
+                        out var ticketId))
+                {
+                    return null;
+                }
+
+                return (
+                    ticketId,
+                    tokenElement.GetString() ?? "",
+                    signatureElement.GetString() ?? "");
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static string BuildPayload(
+            Guid ticketId,
+            string token = RawToken,
+            string signature = Signature)
+        {
+            return System.Text.Json.JsonSerializer.Serialize(
+                new
+                {
+                    ticketId,
+                    token,
+                    sig = signature
+                });
+        }
+    }
+
+    private static TicketService CreateService(
+        AppDbContext context,
+        Guid? estacionId,
+        string rol = "DESPACHADOR")
+    {
+        return new TicketService(
+            context,
+            new FakeAuditService(),
+            new FakeQrCodeService(),
+            new FakeCurrentUserService
+            {
+                Rol = rol,
+                EstacionId = estacionId
+            });
     }
 
     [Fact]
     public async Task ValidarAsync_TicketValido_RetornaDatosCompletosRequeridos()
     {
-        using var context = CreateInMemoryContext();
-        var audit = new FakeAuditService();
+        using var context =
+            CreateInMemoryContext();
 
-        var dep = new Departamento { Id = Guid.NewGuid(), Codigo = "DEP-01", Nombre = "Transporte" };
-        var emp = new Empleado { Id = Guid.NewGuid(), DepartamentoId = dep.Id, Departamento = dep, CodigoEmpleado = "EMP-100", Nombre = "Juan", Apellido = "Pérez", Cedula = "402-0000000-1" };
-        var comb = new TipoCombustible { Id = 1, Codigo = "DIESEL", Nombre = "Diésel" };
-        var veh = new Vehiculo { Id = Guid.NewGuid(), DepartamentoId = dep.Id, Departamento = dep, TipoCombustibleId = comb.Id, TipoCombustible = comb, Placa = "L123456", Ficha = "F-01", Marca = "Toyota", Modelo = "Hilux", OdometroActual = 10000, CapacidadTanque = 80 };
-        var est = new Estacion { Id = Guid.NewGuid(), Codigo = "EST-01", Nombre = "Estación Norte" };
-        var usr = new Usuario { Id = Guid.NewGuid(), NombreUsuario = "creator", Email = "c@t.com", PasswordHash = "h" };
+        var dep = new Departamento
+        {
+            Id = Guid.NewGuid(),
+            Codigo = "DEP-01",
+            Nombre = "Transporte"
+        };
+
+        var emp = new Empleado
+        {
+            Id = Guid.NewGuid(),
+            DepartamentoId = dep.Id,
+            Departamento = dep,
+            CodigoEmpleado = "EMP-100",
+            Nombre = "Juan",
+            Apellido = "Pérez",
+            Cedula = "402-0000000-1"
+        };
+
+        var comb = new TipoCombustible
+        {
+            Id = 1,
+            Codigo = "DIESEL",
+            Nombre = "Diésel"
+        };
+
+        var veh = new Vehiculo
+        {
+            Id = Guid.NewGuid(),
+            DepartamentoId = dep.Id,
+            Departamento = dep,
+            TipoCombustibleId = comb.Id,
+            TipoCombustible = comb,
+            Placa = "L123456",
+            Ficha = "F-01",
+            Marca = "Toyota",
+            Modelo = "Hilux",
+            OdometroActual = 10000,
+            CapacidadTanque = 80
+        };
+
+        var est = new Estacion
+        {
+            Id = Guid.NewGuid(),
+            Codigo = "EST-01",
+            Nombre = "Estación Norte"
+        };
+
+        var usr = new Usuario
+        {
+            Id = Guid.NewGuid(),
+            NombreUsuario = "creator",
+            Email = "c@t.com",
+            PasswordHash = "h"
+        };
 
         var sol = new Solicitud
         {
@@ -67,10 +266,11 @@ public class TicketServiceTests
             NumeroTicket = "COM-2026-000001",
             CantidadAutorizada = 50,
             Estado = "CREADO",
-            TokenQrHash = "QR_HASH_TEST_1",
-            FirmaQr = "SIG_1",
+            TokenQrHash = TokenHash,
+            FirmaQr = Signature,
             FechaEmision = DateTime.UtcNow,
-            FechaExpiracion = DateTime.UtcNow.AddDays(1)
+            FechaExpiracion =
+                DateTime.UtcNow.AddDays(1)
         };
 
         context.Departamentos.Add(dep);
@@ -81,74 +281,212 @@ public class TicketServiceTests
         context.Usuarios.Add(usr);
         context.Solicitudes.Add(sol);
         context.Tickets.Add(ticket);
+
         await context.SaveChangesAsync();
 
-        var sut = new TicketService(context, audit);
+        var sut =
+            CreateService(context, est.Id);
 
-        var dto = await sut.ValidarAsync("COM-2026-000001", CancellationToken.None);
+        var qrPayload =
+            FakeQrCodeService.BuildPayload(ticket.Id);
+
+        var dto = await sut.ValidarAsync(
+            qrPayload,
+            CancellationToken.None);
 
         dto.Should().NotBeNull();
         dto.TicketId.Should().Be(ticket.Id);
-        dto.NumeroTicket.Should().Be("COM-2026-000001");
+        dto.NumeroTicket.Should()
+            .Be("COM-2026-000001");
         dto.Empleado.Should().Be("Juan Pérez");
-        dto.CodigoEmpleado.Should().Be("EMP-100");
-        dto.Vehiculo.Should().Be("Toyota Hilux");
+        dto.CodigoEmpleado.Should()
+            .Be("EMP-100");
+        dto.Vehiculo.Should()
+            .Be("Toyota Hilux");
         dto.Placa.Should().Be("L123456");
         dto.Ficha.Should().Be("F-01");
-        dto.TipoCombustible.Should().Be("Diésel");
-        dto.CantidadAutorizada.Should().Be(50);
-        dto.Vencimiento.Should().Be(ticket.FechaExpiracion);
+        dto.TipoCombustible.Should()
+            .Be("Diésel");
+        dto.CantidadAutorizada.Should()
+            .Be(50);
+        dto.Vencimiento.Should()
+            .Be(ticket.FechaExpiracion);
         dto.Estado.Should().Be("CREADO");
-        dto.EstadoEfectivo.Should().Be("PROXIMO_A_VENCER");
+        dto.EstadoEfectivo.Should()
+            .Be("PROXIMO_A_VENCER");
     }
 
     [Fact]
     public async Task ValidarAsync_TicketConsumido_LanzaExcepcion()
     {
-        using var context = CreateInMemoryContext();
-        var audit = new FakeAuditService();
+        using var context =
+            CreateInMemoryContext();
+
+        var estacionId = Guid.NewGuid();
 
         var ticket = new Ticket
         {
             Id = Guid.NewGuid(),
+            EstacionId = estacionId,
             NumeroTicket = "COM-2026-999999",
             Estado = "CONSUMIDO",
-            TokenQrHash = "HASH_C",
-            FirmaQr = "SIG_C",
+            TokenQrHash = TokenHash,
+            FirmaQr = Signature,
             CantidadAutorizada = 20,
-            FechaExpiracion = DateTime.UtcNow.AddDays(1)
+            FechaExpiracion =
+                DateTime.UtcNow.AddDays(1)
         };
+
         context.Tickets.Add(ticket);
         await context.SaveChangesAsync();
 
-        var sut = new TicketService(context, audit);
+        var sut =
+            CreateService(context, estacionId);
 
-        var act = () => sut.ValidarAsync("COM-2026-999999", CancellationToken.None);
-        await act.Should().ThrowAsync<ApiException>();
+        var qrPayload =
+            FakeQrCodeService.BuildPayload(ticket.Id);
+
+        var act = () =>
+            sut.ValidarAsync(
+                qrPayload,
+                CancellationToken.None);
+
+        var exception = await act.Should()
+            .ThrowAsync<ApiException>();
+
+        exception.Which.Code.Should()
+            .Be("TICKET_CONSUMED");
     }
 
     [Fact]
     public async Task ValidarAsync_TicketVencido_LanzaExcepcion()
     {
-        using var context = CreateInMemoryContext();
-        var audit = new FakeAuditService();
+        using var context =
+            CreateInMemoryContext();
+
+        var estacionId = Guid.NewGuid();
 
         var ticket = new Ticket
         {
             Id = Guid.NewGuid(),
+            EstacionId = estacionId,
             NumeroTicket = "COM-2026-888888",
             Estado = "CREADO",
-            TokenQrHash = "HASH_V",
-            FirmaQr = "SIG_V",
+            TokenQrHash = TokenHash,
+            FirmaQr = Signature,
             CantidadAutorizada = 20,
-            FechaExpiracion = DateTime.UtcNow.AddDays(-1)
+            FechaExpiracion =
+                DateTime.UtcNow.AddDays(-1)
         };
+
         context.Tickets.Add(ticket);
         await context.SaveChangesAsync();
 
-        var sut = new TicketService(context, audit);
+        var sut =
+            CreateService(context, estacionId);
 
-        var act = () => sut.ValidarAsync("COM-2026-888888", CancellationToken.None);
-        await act.Should().ThrowAsync<ApiException>();
+        var qrPayload =
+            FakeQrCodeService.BuildPayload(ticket.Id);
+
+        var act = () =>
+            sut.ValidarAsync(
+                qrPayload,
+                CancellationToken.None);
+
+        var exception = await act.Should()
+            .ThrowAsync<ApiException>();
+
+        exception.Which.Code.Should()
+            .Be("TICKET_EXPIRED");
+    }
+
+    [Fact]
+    public async Task ValidarAsync_QrManipulado_LanzaFirmaInvalida()
+    {
+        using var context =
+            CreateInMemoryContext();
+
+        var estacionId = Guid.NewGuid();
+
+        var ticket = new Ticket
+        {
+            Id = Guid.NewGuid(),
+            EstacionId = estacionId,
+            NumeroTicket = "COM-2026-000010",
+            Estado = "CREADO",
+            TokenQrHash = TokenHash,
+            FirmaQr = Signature,
+            CantidadAutorizada = 20,
+            FechaExpiracion =
+                DateTime.UtcNow.AddDays(1)
+        };
+
+        context.Tickets.Add(ticket);
+        await context.SaveChangesAsync();
+
+        var sut =
+            CreateService(context, estacionId);
+
+        var qrManipulado =
+            FakeQrCodeService.BuildPayload(
+                ticket.Id,
+                token: "token-manipulado",
+                signature: Signature);
+
+        var act = () =>
+            sut.ValidarAsync(
+                qrManipulado,
+                CancellationToken.None);
+
+        var exception = await act.Should()
+            .ThrowAsync<ApiException>();
+
+        exception.Which.Code.Should()
+            .Be("FIRMA_INVALIDA");
+    }
+
+    [Fact]
+    public async Task ValidarAsync_DespachadorOtraEstacion_LanzaForbidden()
+    {
+        using var context =
+            CreateInMemoryContext();
+
+        var estacionTicket = Guid.NewGuid();
+        var estacionDespachador = Guid.NewGuid();
+
+        var ticket = new Ticket
+        {
+            Id = Guid.NewGuid(),
+            EstacionId = estacionTicket,
+            NumeroTicket = "COM-2026-000011",
+            Estado = "CREADO",
+            TokenQrHash = TokenHash,
+            FirmaQr = Signature,
+            CantidadAutorizada = 20,
+            FechaExpiracion =
+                DateTime.UtcNow.AddDays(1)
+        };
+
+        context.Tickets.Add(ticket);
+        await context.SaveChangesAsync();
+
+        var sut =
+            CreateService(
+                context,
+                estacionDespachador);
+
+        var qrPayload =
+            FakeQrCodeService.BuildPayload(ticket.Id);
+
+        var act = () =>
+            sut.ValidarAsync(
+                qrPayload,
+                CancellationToken.None);
+
+        var exception = await act.Should()
+            .ThrowAsync<ApiException>();
+
+        exception.Which.Code.Should()
+            .Be("FORBIDDEN");
     }
 }
