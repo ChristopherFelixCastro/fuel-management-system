@@ -39,7 +39,17 @@ export function HomePage() {
             <span className="status-dot" aria-hidden="true" />
             <span>Turno activo</span>
           </span>
-          <span style={{ fontSize: '0.75rem', opacity: 0.8, letterSpacing: '0.04em' }}>ID: DISPATCH-01</span>
+
+          <span
+  style={{
+    fontSize: '0.75rem',
+    opacity: 0.8,
+    letterSpacing: '0.04em',
+  }}
+>
+  ID: {user?.id.slice(0, 8).toUpperCase() ?? 'N/D'}
+</span>
+        
         </div>
         <h1 className="operator-name">{user?.name ?? 'Operador'}</h1>
         <p className="operator-station">
@@ -47,7 +57,9 @@ export function HomePage() {
             <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
-          <span>{user?.stationName ?? 'Estación de Combustible'}</span>
+         <span>
+             Estación asignada · {user?.stationId.slice(0, 8).toUpperCase() ?? 'N/D'}
+        </span>
         </p>
       </section>
 
@@ -83,15 +95,6 @@ export function HomePage() {
             <span>Módulo de escaneo (Próximamente)</span>
           </button>
         </section>
-      </div>
-
-      <div className="demo-note">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="16" x2="12" y2="12" />
-          <line x1="12" y1="8" x2="12.01" y2="8" />
-        </svg>
-        <span>La integración de cámara web/móvil para lectura de QR se incorporará en el siguiente bloque.</span>
       </div>
     </main>
   )

@@ -18,12 +18,12 @@ export function LoginPage() {
             />
           </div>
           <div className="brand-title">
-            <span>PetroDespacho</span>
+            <span>La Bomba</span>
             <span className="brand-badge">PWA</span>
           </div>
           <div className="auth-header-text">
             <h1>Acceso de Operador</h1>
-            <p>Inicia sesión para abrir tu turno en estación</p>
+          <p>Inicia sesión para abrir tu turno en estación</p>
           </div>
         </header>
 
@@ -88,9 +88,6 @@ export function LoginPage() {
           </button>
         </form>
 
-        <div className="hint-card">
-          <span><strong>Modo demostración:</strong> ingresa cualquier usuario y contraseña para acceder al sistema.</span>
-        </div>
       </section>
     </main>
   )
