@@ -1,0 +1,33 @@
+name: build-and-test
+
+on:
+  pull_request:
+    branches: [ develop, main ]
+  push:
+    branches: [ develop, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore CombustibleAPI.sln
+
+      - name: Build
+        run: dotnet build CombustibleAPI.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test CombustibleAPI.sln --no-build --configuration Release --verbosity normal
+        continue-on-error: false
+
+  # No se integra código si build o tests fallan (SDP General sec. 11 "CI/CD mínimo"):
+  # Pull Request -> Build -> Tests -> Revisión Iván -> Merge -> Despliegue prueba.

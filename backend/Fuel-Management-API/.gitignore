@@ -1,0 +1,17 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Secretos — NUNCA deben llegar al repositorio
+**/appsettings.Production.json
+**/appsettings.*.local.json
+*.pfx
+*.env
+.env
+
+## Editor
+.idea/
+.vscode/

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>CombustibleAPI.Application</RootNamespace>
+  </PropertyGroup>
+
+  <!-- PasswordHasher<T> vive en Microsoft.AspNetCore.Identity, parte del framework compartido ASP.NET Core -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CombustibleAPI.Domain\CombustibleAPI.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
