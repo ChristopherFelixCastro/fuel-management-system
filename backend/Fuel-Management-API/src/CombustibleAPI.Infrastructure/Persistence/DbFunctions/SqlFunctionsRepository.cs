@@ -11,6 +11,14 @@ namespace CombustibleAPI.Infrastructure.Persistence.DbFunctions;
 /// </summary>
 public class SqlFunctionsRepository
 {
+    public async Task<string> GenerarNumeroTicketAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, CancellationToken ct)
+    {
+        await using var cmd = new NpgsqlCommand("SELECT fn_generar_numero_ticket()", connection, transaction);
+        var result = await cmd.ExecuteScalarAsync(ct);
+        if (result is not string numero || string.IsNullOrWhiteSpace(numero))
+            throw ApiException.BusinessRule("TICKET_NUMBER_FAILED", "No se pudo generar el número consecutivo del ticket.");
+        return numero;
+    }
     /// <summary>
     /// Invoca fn_registrar_despacho(p_ticket_id, p_despachador_usuario_id, p_tanque_id,
     /// p_cantidad_despachada, p_odometro_registrado, p_observaciones, p_direccion_ip) -> UUID

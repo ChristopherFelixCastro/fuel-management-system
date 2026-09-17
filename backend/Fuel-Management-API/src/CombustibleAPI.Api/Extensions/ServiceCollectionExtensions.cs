@@ -39,6 +39,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMastersService, MastersService>();
         services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<IClosureService, ClosureService>();
+        services.AddScoped<IRequestService, RequestService>();
 
         return services;
     }
