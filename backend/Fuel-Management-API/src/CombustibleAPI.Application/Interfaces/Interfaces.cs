@@ -128,6 +128,19 @@ public interface IInventoryService
 /// </summary>
 public interface IClosureService
 {
+    Task<ClosurePreviewDto> GetPreviewAsync(
+        Guid tanqueId,
+        DateOnly fecha,
+        CancellationToken ct);
+
+    Task<ClosurePagedResponseDto> GetClosuresAsync(
+        ClosureFilterDto filter,
+        CancellationToken ct);
+
+    Task<ClosureResponseDto> GetClosureByIdAsync(
+        Guid closureId,
+        CancellationToken ct);
+
     Task<ClosureResponseDto> CreateDailyClosureAsync(
         CreateDailyClosureRequestDto request,
         Guid usuarioId,

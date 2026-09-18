@@ -54,3 +54,43 @@ public class ClosureResponseDto
     public string? MotivoRechazo { get; set; }
     public string? Observaciones { get; set; }
 }
+public class ClosurePreviewDto
+{
+    public Guid TanqueId { get; set; }
+    public DateOnly Fecha { get; set; }
+
+    public decimal StockInicial { get; set; }
+    public decimal TotalRecepciones { get; set; }
+    public decimal TotalTransferenciasEntrada { get; set; }
+    public decimal TotalTransferenciasSalida { get; set; }
+    public decimal TotalDespachos { get; set; }
+    public decimal TotalAjustesPositivos { get; set; }
+    public decimal TotalAjustesNegativos { get; set; }
+    public decimal StockTeoricoFinal { get; set; }
+}
+
+public class ClosureFilterDto
+{
+    public DateOnly? FechaDesde { get; set; }
+    public DateOnly? FechaHasta { get; set; }
+    public Guid? TanqueId { get; set; }
+    public string? Estado { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int Page { get; set; } = 1;
+
+    [Range(1, 100)]
+    public int PageSize { get; set; } = 20;
+}
+
+public class ClosurePagedResponseDto
+{
+    public List<ClosureResponseDto> Items { get; set; } = [];
+    public int TotalCount { get; set; }
+    public int Page { get; set; }
+    public int PageSize { get; set; }
+    public int TotalPages =>
+        PageSize <= 0
+            ? 0
+            : (int)Math.Ceiling(TotalCount / (double)PageSize);
+}
