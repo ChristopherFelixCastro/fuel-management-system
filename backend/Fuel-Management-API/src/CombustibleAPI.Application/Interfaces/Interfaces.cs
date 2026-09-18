@@ -6,7 +6,7 @@ using CombustibleAPI.Application.Dtos.Masters;
 using CombustibleAPI.Application.Dtos.Tickets;
 using CombustibleAPI.Domain.Entities;
 using CombustibleAPI.Application.Dtos.Reports;
-
+using CombustibleAPI.Application.Dtos.Alerts;
 namespace CombustibleAPI.Application.Interfaces;
 
 public interface IAuthService
@@ -214,5 +214,11 @@ public interface IReportExportService
     Task<ReportExportResultDto> ExportTraceabilityAsync(
         TraceabilityReportFilterDto filter,
         string format,
+        CancellationToken ct);
+}
+public interface IAlertService
+{
+    Task<LowInventoryAlertPagedResponseDto> GetLowInventoryAsync(
+        LowInventoryAlertFilterDto filter,
         CancellationToken ct);
 }

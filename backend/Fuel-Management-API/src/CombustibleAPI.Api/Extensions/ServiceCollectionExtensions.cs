@@ -45,6 +45,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITicketService, TicketService>();
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IReportExportService, ReportExportService>();
+        services.AddScoped<IAlertService, AlertService>();
 
 
         return services;
