@@ -1,6 +1,8 @@
 import { useAuth } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 export function HomePage() {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
 
   return (
     <main className="home-page">
@@ -87,7 +89,11 @@ export function HomePage() {
             </div>
           </div>
 
-          <button type="button" disabled title="Módulo de escáner en fase de integración">
+          <button
+                type="button"
+                onClick={() => navigate('/scan')}
+                title="Escanear un ticket QR"
+              >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />

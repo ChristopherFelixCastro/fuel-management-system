@@ -18,7 +18,7 @@ export interface AuthSession {
   refreshTokenExpiresAt: string
 }
 
-export interface LoginApiResponse {
+export interface AuthApiResponse {
   data: {
     accessToken: string
     accessTokenExpiraEn: string
@@ -34,3 +34,6 @@ export interface LoginApiResponse {
     traceId: string
   }
 }
+
+export type LoginApiResponse = AuthApiResponse
+export type RefreshApiResponse = AuthApiResponse
