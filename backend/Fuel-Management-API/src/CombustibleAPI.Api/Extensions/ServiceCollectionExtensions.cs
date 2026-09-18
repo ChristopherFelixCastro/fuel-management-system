@@ -43,6 +43,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRequestService, RequestService>();
         services.AddScoped<IQrCodeService, QrCodeService>();
         services.AddScoped<ITicketService, TicketService>();
+        services.AddScoped<IReportService, ReportService>();
+        services.AddScoped<IReportExportService, ReportExportService>();
+
 
         return services;
     }

@@ -5,6 +5,7 @@ using CombustibleAPI.Application.Dtos.Inventory;
 using CombustibleAPI.Application.Dtos.Masters;
 using CombustibleAPI.Application.Dtos.Tickets;
 using CombustibleAPI.Domain.Entities;
+using CombustibleAPI.Application.Dtos.Reports;
 
 namespace CombustibleAPI.Application.Interfaces;
 
@@ -31,7 +32,7 @@ public interface IAuthService
 }
 
 /// <summary>
-/// Emisión/validación de JWT de acceso y generación de refresh tokens.
+/// EmisiÃ³n/validaciÃ³n de JWT de acceso y generaciÃ³n de refresh tokens.
 /// </summary>
 public interface ITokenService
 {
@@ -39,7 +40,7 @@ public interface ITokenService
         GenerarAccessToken(Usuario usuario);
 
     /// <summary>
-    /// Genera un valor aleatorio criptográficamente seguro
+    /// Genera un valor aleatorio criptogrÃ¡ficamente seguro
     /// para el refresh token.
     /// </summary>
     string GenerarRefreshTokenValue();
@@ -71,7 +72,7 @@ public interface IDispatchService
 }
 
 /// <summary>
-/// Operaciones relacionadas con tickets y códigos QR.
+/// Operaciones relacionadas con tickets y cÃ³digos QR.
 /// </summary>
 public interface ITicketService
 {
@@ -93,7 +94,7 @@ public interface ITicketService
 }
 
 /// <summary>
-/// Catálogos maestros.
+/// CatÃ¡logos maestros.
 /// </summary>
 public interface IMastersService
 {
@@ -160,7 +161,7 @@ public interface IClosureService
 
 /// <summary>
 /// Registra eventos en audit_log utilizando el mecanismo
-/// de auditoría append-only del sistema.
+/// de auditorÃ­a append-only del sistema.
 /// </summary>
 public interface IAuditService
 {
@@ -181,4 +182,37 @@ public interface ICurrentUserService
     string? Rol { get; }
     Guid? EstacionId { get; }
     string? IpAddress { get; }
+}
+
+public interface IReportService
+{
+    Task<ReportPagedResponseDto<ConsumptionReportItemDto>> GetConsumptionAsync(
+        ConsumptionReportFilterDto filter,
+        CancellationToken ct);
+
+    Task<ReportPagedResponseDto<InventoryReportItemDto>> GetInventoryAsync(
+        InventoryReportFilterDto filter,
+        CancellationToken ct);
+
+    Task<ReportPagedResponseDto<TraceabilityReportItemDto>> GetTraceabilityAsync(
+        TraceabilityReportFilterDto filter,
+        CancellationToken ct);
+}
+
+public interface IReportExportService
+{
+    Task<ReportExportResultDto> ExportConsumptionAsync(
+        ConsumptionReportFilterDto filter,
+        string format,
+        CancellationToken ct);
+
+    Task<ReportExportResultDto> ExportInventoryAsync(
+        InventoryReportFilterDto filter,
+        string format,
+        CancellationToken ct);
+
+    Task<ReportExportResultDto> ExportTraceabilityAsync(
+        TraceabilityReportFilterDto filter,
+        string format,
+        CancellationToken ct);
 }
