@@ -16,12 +16,16 @@ namespace CombustibleAPI.Api.Controllers;
 [Produces("application/json")]
 public class MastersController : ControllerBase
 {
-    private readonly IMastersService _mastersService;
+  private readonly IMastersService _mastersService;
+private readonly IAdminService _admin;
 
-    public MastersController(IMastersService mastersService)
-    {
-        _mastersService = mastersService;
-    }
+public MastersController(
+    IMastersService mastersService,
+    IAdminService admin)
+{
+    _mastersService = mastersService;
+    _admin = admin;
+}
 
     /// <summary>Listado de roles activos del sistema.</summary>
     [HttpGet("roles")]
@@ -72,5 +76,21 @@ public class MastersController : ControllerBase
     {
         var result = await _mastersService.GetTanquesAsync(stationId, tipoCombustibleId, ct);
         return Ok(ApiResponse<List<TanqueDto>>.Ok(result, HttpContext.GetTraceId()));
+    }
+
+    [HttpGet("fuel-types")]
+    public async Task<IActionResult> GetFuelTypes(
+    CancellationToken ct)
+    {
+        var data = await _admin.GetTiposCombustibleAsync(ct);
+
+        return Ok(new
+        {
+            data,
+            meta = new
+            {
+                traceId = HttpContext.TraceIdentifier
+            }
+        });
     }
 }

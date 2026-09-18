@@ -8,6 +8,8 @@ using CombustibleAPI.Domain.Entities;
 using CombustibleAPI.Application.Dtos.Reports;
 using CombustibleAPI.Application.Dtos.Alerts;
 namespace CombustibleAPI.Application.Interfaces;
+using CombustibleAPI.Application.Dtos.Admin;
+using CombustibleAPI.Application.Dtos.Dashboard;
 
 public interface IAuthService
 {
@@ -220,5 +222,125 @@ public interface IAlertService
 {
     Task<LowInventoryAlertPagedResponseDto> GetLowInventoryAsync(
         LowInventoryAlertFilterDto filter,
+        CancellationToken ct);
+}
+
+public interface IAdminService
+{
+    // Departamentos
+    Task<List<DepartamentoAdminDto>> GetDepartamentosAsync(
+        bool incluirInactivos,
+        CancellationToken ct);
+
+    Task<DepartamentoAdminDto> GetDepartamentoAsync(
+        Guid id,
+        CancellationToken ct);
+
+    Task<DepartamentoAdminDto> CreateDepartamentoAsync(
+        CreateDepartamentoDto request,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    Task<DepartamentoAdminDto> UpdateDepartamentoAsync(
+        Guid id,
+        UpdateDepartamentoDto request,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    Task DeactivateDepartamentoAsync(
+        Guid id,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    // Empleados
+    Task<List<EmpleadoAdminDto>> GetEmpleadosAsync(
+        bool incluirInactivos,
+        CancellationToken ct);
+
+    Task<EmpleadoAdminDto> GetEmpleadoAsync(
+        Guid id,
+        CancellationToken ct);
+
+    Task<EmpleadoAdminDto> CreateEmpleadoAsync(
+        CreateEmpleadoDto request,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    Task<EmpleadoAdminDto> UpdateEmpleadoAsync(
+        Guid id,
+        UpdateEmpleadoDto request,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    Task DeactivateEmpleadoAsync(
+        Guid id,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    // Vehículos
+    Task<List<VehiculoAdminDto>> GetVehiculosAsync(
+        bool incluirInactivos,
+        CancellationToken ct);
+
+    Task<VehiculoAdminDto> GetVehiculoAsync(
+        Guid id,
+        CancellationToken ct);
+
+    Task<VehiculoAdminDto> CreateVehiculoAsync(
+        CreateVehiculoDto request,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    Task<VehiculoAdminDto> UpdateVehiculoAsync(
+        Guid id,
+        UpdateVehiculoDto request,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    Task DeactivateVehiculoAsync(
+        Guid id,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    // Usuarios
+    Task<List<UsuarioAdminDto>> GetUsuariosAsync(
+        bool incluirInactivos,
+        CancellationToken ct);
+
+    Task<UsuarioAdminDto> GetUsuarioAsync(
+        Guid id,
+        CancellationToken ct);
+
+    Task<UsuarioAdminDto> CreateUsuarioAsync(
+        CreateUsuarioDto request,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    Task<UsuarioAdminDto> UpdateUsuarioAsync(
+        Guid id,
+        UpdateUsuarioDto request,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    Task ChangeUsuarioPasswordAsync(
+        Guid id,
+        ChangeUsuarioPasswordDto request,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    Task DeactivateUsuarioAsync(
+        Guid id,
+        Guid usuarioId,
+        CancellationToken ct);
+
+    // Catálogos
+    Task<List<TipoCombustibleAdminDto>> GetTiposCombustibleAsync(
+        CancellationToken ct);
+}
+
+public interface IDashboardService
+{
+    Task<DashboardSummaryDto> GetSummaryAsync(
+        DashboardFilterDto filter,
         CancellationToken ct);
 }

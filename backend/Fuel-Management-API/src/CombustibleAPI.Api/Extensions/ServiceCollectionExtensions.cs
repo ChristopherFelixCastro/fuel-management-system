@@ -38,14 +38,16 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITicketService, TicketService>();
         services.AddScoped<IDispatchService, DispatchService>();
         services.AddScoped<IMastersService, MastersService>();
+        services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<IClosureService, ClosureService>();
         services.AddScoped<IRequestService, RequestService>();
         services.AddScoped<IQrCodeService, QrCodeService>();
-        services.AddScoped<ITicketService, TicketService>();
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IReportExportService, ReportExportService>();
         services.AddScoped<IAlertService, AlertService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+
 
 
         return services;
