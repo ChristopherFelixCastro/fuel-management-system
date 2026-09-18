@@ -1,0 +1,6 @@
+@FuelManagement.Api_HostAddress = http://localhost:5132
+
+GET {{FuelManagement.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
