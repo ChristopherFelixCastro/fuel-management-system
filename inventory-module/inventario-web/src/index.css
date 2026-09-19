@@ -1,0 +1,6 @@
+body { font-family: system-ui, sans-serif; margin: 0; padding: 1rem 2rem; }
+nav { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+nav a.active { font-weight: bold; }
+table { border-collapse: collapse; }
+th, td { border: 1px solid #ccc; padding: 4px 8px; text-align: left; }
+form { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
