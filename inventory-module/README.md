@@ -2,7 +2,7 @@
 
 ## Cómo correrlo
 - API: `cd Inventario.Api` y `dotnet run` (http://localhost:5076, docs en /scalar/v1)
-- Web: `cd inventario-web`, `npm install`, `npm run dev` (http://localhost:5173)
+- Web: `cd inventario-web`, `npm install`, `npm run dev` (http://localhost:5174)
 
 ## Qué reemplazar al conectar a la BD real
 1. `Data/InventoryMockContext.cs`: usar el DbContext real. Los DbSet son Estaciones, Tanques, Proveedores, Recepciones, Movimientos, Transferencias y Ajustes.
