@@ -46,9 +46,9 @@ DECLARE
     v_saldo_posterior NUMERIC(12,2);
 BEGIN
 
-    
+
     -- 1. VALIDAR DESPACHADOR
-    
+
 
     SELECT
         u.estacion_id,
@@ -80,12 +80,12 @@ BEGIN
     END IF;
 
 
-    
+
     -- 2. BLOQUEAR Y VALIDAR TICKET
-    
+
     -- FOR UPDATE evita que dos despachos puedan consumir
     -- simultáneamente el mismo ticket.
-    
+
 
     SELECT
         tk.estado,
@@ -126,18 +126,18 @@ BEGIN
     END IF;
 
 
-    
+
     -- 3. VALIDAR ESTACIÓN DEL DESPACHADOR
-    
+
 
     IF v_usuario_estacion <> v_ticket_estacion THEN
         RAISE EXCEPTION 'DESPACHADOR_ESTACION_INVALIDA';
     END IF;
 
 
-    
+
     -- 4. VALIDAR CANTIDAD
-    
+
 
     IF p_cantidad_despachada IS NULL
        OR p_cantidad_despachada <= 0 THEN
@@ -150,9 +150,9 @@ BEGIN
     END IF;
 
 
-    
+
     -- 5. BLOQUEAR Y VALIDAR TANQUE
-    
+
 
     SELECT
         t.estacion_id,
@@ -199,9 +199,9 @@ BEGIN
     END IF;
 
 
-    
+
     -- 6. OBTENER VEHÍCULO DE LA SOLICITUD
-    
+
 
     SELECT
         s.vehiculo_id
@@ -215,9 +215,9 @@ BEGIN
     END IF;
 
 
-    
+
     -- 7. BLOQUEAR Y VALIDAR ODOMETRO
-    
+
 
     SELECT
         v.odometro_actual
@@ -241,17 +241,17 @@ BEGIN
     END IF;
 
 
-    
+
     -- 8. CALCULAR NUEVO SALDO
-    
+
 
     v_saldo_posterior :=
         v_stock_actual - p_cantidad_despachada;
 
 
-    
+
     -- 9. CREAR DESPACHO
-    
+
 
     INSERT INTO despacho (
         ticket_id,
@@ -277,9 +277,9 @@ BEGIN
     INTO v_despacho_id;
 
 
-    
+
     -- 10. ACTUALIZAR STOCK FÍSICO
-    
+
 
     UPDATE tanque
     SET
@@ -288,9 +288,9 @@ BEGIN
     WHERE id = p_tanque_id;
 
 
-    
+
     -- 11. ACTUALIZAR ODOMETRO
-    
+
 
     UPDATE vehiculo
     SET
@@ -299,18 +299,18 @@ BEGIN
     WHERE id = v_vehiculo_id;
 
 
-    
+
     -- 12. CONSUMIR TICKET
-    
+
 
     UPDATE ticket
     SET estado = 'CONSUMIDO'
     WHERE id = p_ticket_id;
 
 
-    
+
     -- 13. REGISTRAR MOVIMIENTO DE INVENTARIO
-    
+
 
     INSERT INTO movimiento_inventario (
         tanque_id,
@@ -336,9 +336,9 @@ BEGIN
     );
 
 
-    
+
     -- 14. DEVOLVER ID DEL DESPACHO
-    
+
 
     RETURN v_despacho_id;
 

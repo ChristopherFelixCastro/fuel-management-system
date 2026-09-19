@@ -12,6 +12,8 @@ import { ScanPage } from './pages/ScanPage'
 import { ProtectedRoute } from './routes/ProtectedRoute'
 import { TicketPage } from './pages/TicketPage'
 import { ClosurePage } from './pages/ClosurePage'
+import { InventoryPage } from './pages/InventoryPage'
+import { AdjustmentPage } from './pages/AdjustmentPage'
 export function App() {
   return (
     <AuthProvider>
@@ -24,6 +26,8 @@ export function App() {
             <Route path="/scan" element={<ScanPage />} />
             <Route path="/ticket" element={<TicketPage />} />
             <Route path="/closure" element={<ClosurePage />} />
+            <Route path="/inventory" element={<InventoryPage />} />
+            <Route path="/adjustment" element={<AdjustmentPage />} />
           </Route>
 
           <Route

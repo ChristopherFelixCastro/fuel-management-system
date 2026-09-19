@@ -55,6 +55,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
       allowedRoles: ['ADMINISTRADOR', 'SUPERVISOR', 'AUDITOR'],
     },
     {
+      to: '/inventory',
+      label: 'Inventario',
+      icon: <Fuel className="w-5 h-5" />,
+      allowedRoles: ['ADMINISTRADOR', 'SUPERVISOR', 'AUDITOR'],
+    },
+    {
       to: '/closures',
       label: 'Cierres diarios',
       icon: <ClipboardCheck className="w-5 h-5" />,

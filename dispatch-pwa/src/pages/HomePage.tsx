@@ -140,6 +140,8 @@ export function HomePage() {
     <span>Realizar cierre diario</span>
   </button>
 </section>
+        <section className="action-card"><div className="action-details"><h2>Inventario</h2><p>Consulta las existencias de tu estación.</p></div><button type="button" onClick={() => navigate('/inventory')}>Ver existencias</button></section>
+        <section className="action-card"><div className="action-details"><h2>Ajuste de inventario</h2><p>Reporta un conteo físico para revisión.</p></div><button type="button" onClick={() => navigate('/adjustment')}>Reportar ajuste</button></section>
       </div>
     </main>
   )

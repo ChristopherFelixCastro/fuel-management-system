@@ -560,6 +560,7 @@ CREATE TABLE ajuste_inventario (
     revisado_por_usuario_id UUID,
     tipo_ajuste VARCHAR(20) NOT NULL,
     cantidad NUMERIC(12,2) NOT NULL,
+    conteo_fisico NUMERIC(12,2),
     motivo VARCHAR(300) NOT NULL,
     estado VARCHAR(25) NOT NULL DEFAULT 'PENDIENTE',
     fecha_reporte TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -591,7 +592,13 @@ CREATE TABLE ajuste_inventario (
         ),
 
     CONSTRAINT chk_ajuste_cantidad
-        CHECK (cantidad > 0),
+        CHECK (
+            cantidad > 0
+            OR (estado = 'APROBADO' AND cantidad = 0)
+        ),
+
+    CONSTRAINT chk_ajuste_conteo_fisico
+        CHECK (conteo_fisico IS NULL OR conteo_fisico >= 0),
 
     CONSTRAINT chk_ajuste_estado
         CHECK (

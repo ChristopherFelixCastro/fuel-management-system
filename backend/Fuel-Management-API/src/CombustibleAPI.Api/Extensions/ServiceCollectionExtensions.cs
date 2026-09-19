@@ -40,6 +40,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMastersService, MastersService>();
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IInventoryService, InventoryService>();
+        services.AddScoped<IInventoryOperationsService, InventoryOperationsService>();
         services.AddScoped<IClosureService, ClosureService>();
         services.AddScoped<IRequestService, RequestService>();
         services.AddScoped<IQrCodeService, QrCodeService>();

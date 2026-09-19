@@ -11,6 +11,7 @@ import { Departments } from './pages/Departments';
 import { Closures } from './pages/Closures';
 import { Reports } from './pages/Reports';
 import { Alerts } from './pages/Alerts';
+import { InventoryOperations } from './pages/InventoryOperations';
 
 export const App: React.FC = () => {
   return (
@@ -93,6 +94,10 @@ export const App: React.FC = () => {
       <Reports />
     </ProtectedRoute>
   }
+/>
+<Route
+  path="inventory"
+  element={<ProtectedRoute allowedRoles={['ADMINISTRADOR','SUPERVISOR','AUDITOR']}><InventoryOperations /></ProtectedRoute>}
 />
 <Route
   path="alerts"

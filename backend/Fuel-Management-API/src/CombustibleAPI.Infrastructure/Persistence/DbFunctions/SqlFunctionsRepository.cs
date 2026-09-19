@@ -11,6 +11,13 @@ namespace CombustibleAPI.Infrastructure.Persistence.DbFunctions;
 /// </summary>
 public class SqlFunctionsRepository
 {
+    public async Task BloquearInventarioAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Guid estacionId, short tipoCombustibleId, CancellationToken ct)
+    {
+        await using var cmd = new NpgsqlCommand("SELECT pg_advisory_xact_lock(hashtextextended(@key, 0))", connection, transaction);
+        cmd.Parameters.Add(new NpgsqlParameter("key", NpgsqlDbType.Text) { Value = $"{estacionId}:{tipoCombustibleId}" });
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
     public async Task<string> GenerarNumeroTicketAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, CancellationToken ct)
     {
         await using var cmd = new NpgsqlCommand("SELECT fn_generar_numero_ticket()", connection, transaction);
@@ -226,6 +233,10 @@ public class SqlFunctionsRepository
             return ApiException.ValidationError("Se requiere un motivo para rechazar el cierre.");
         if (msg.Contains("CIERRE_YA_REVISADO", StringComparison.OrdinalIgnoreCase))
             return ApiException.Conflict("El cierre ya fue revisado.");
+        if (msg.Contains("CIERRE_APROBADO_INMUTABLE", StringComparison.OrdinalIgnoreCase))
+            return ApiException.Conflict(
+                "CLOSURE_APPROVED_IMMUTABLE",
+                "No se puede modificar inventario para un tanque con cierre aprobado en la fecha de la operación.");
 
         if (pgEx.SqlState == PostgresErrorCodes.UniqueViolation)
         {

@@ -18,13 +18,16 @@ public class MastersController : ControllerBase
 {
   private readonly IMastersService _mastersService;
 private readonly IAdminService _admin;
+private readonly ICurrentUserService _currentUser;
 
 public MastersController(
     IMastersService mastersService,
-    IAdminService admin)
+    IAdminService admin,
+    ICurrentUserService currentUser)
 {
     _mastersService = mastersService;
     _admin = admin;
+    _currentUser = currentUser;
 }
 
     /// <summary>Listado de roles activos del sistema.</summary>
@@ -74,6 +77,9 @@ public MastersController(
         [FromQuery] short? tipoCombustibleId,
         CancellationToken ct)
     {
+        if (string.Equals(_currentUser.Rol, "DESPACHADOR", StringComparison.OrdinalIgnoreCase) &&
+            _currentUser.EstacionId != stationId)
+            return Forbid();
         var result = await _mastersService.GetTanquesAsync(stationId, tipoCombustibleId, ct);
         return Ok(ApiResponse<List<TanqueDto>>.Ok(result, HttpContext.GetTraceId()));
     }
@@ -93,4 +99,8 @@ public MastersController(
             }
         });
     }
+
+    [HttpGet("proveedores")]
+    [Authorize(Roles = "ADMINISTRADOR,SUPERVISOR,AUDITOR")]
+    public async Task<IActionResult> GetProveedores(CancellationToken ct) => Ok(ApiResponse<List<ProveedorDto>>.Ok(await _mastersService.GetProveedoresAsync(ct), HttpContext.GetTraceId()));
 }

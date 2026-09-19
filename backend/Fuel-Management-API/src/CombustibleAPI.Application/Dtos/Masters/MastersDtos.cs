@@ -50,3 +50,14 @@ public class TanqueDto
     public decimal NivelCritico { get; set; }
     public bool Activo { get; set; }
 }
+
+public class ProveedorDto
+{
+    public Guid Id { get; set; }
+    public string Rnc { get; set; } = default!;
+    public string Nombre { get; set; } = default!;
+    public string? NombreComercial { get; set; }
+    public string? Email { get; set; }
+    public string? Telefono { get; set; }
+    public bool Activo { get; set; }
+}

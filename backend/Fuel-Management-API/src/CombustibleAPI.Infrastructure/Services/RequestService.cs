@@ -400,6 +400,7 @@ public sealed class RequestService : IRequestService
 
         if (connection is not null)
         {
+            await _sql.BloquearInventarioAsync(connection, tx!, dto.EstacionId, tipo, ct);
             disponible =
                 (await _sql.ObtenerStockDisponibleAsync(
                     connection,

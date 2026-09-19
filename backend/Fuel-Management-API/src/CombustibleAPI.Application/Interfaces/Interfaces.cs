@@ -113,6 +113,7 @@ public interface IMastersService
         Guid? estacionId,
         short? tipoCombustibleId,
         CancellationToken ct);
+    Task<List<ProveedorDto>> GetProveedoresAsync(CancellationToken ct);
 }
 
 /// <summary>
@@ -343,4 +344,15 @@ public interface IDashboardService
     Task<DashboardSummaryDto> GetSummaryAsync(
         DashboardFilterDto filter,
         CancellationToken ct);
+}
+
+public interface IInventoryOperationsService
+{
+    Task<InventoryOperationResultDto> CreateReceptionAsync(CreateReceptionRequestDto request, Guid userId, CancellationToken ct);
+    Task<InventoryOperationResultDto> CreateTransferAsync(CreateTransferRequestDto request, Guid userId, CancellationToken ct);
+    Task<InventoryOperationResultDto> ReportAdjustmentAsync(ReportAdjustmentRequestDto request, Guid userId, Guid stationId, CancellationToken ct);
+    Task ApproveAdjustmentAsync(Guid adjustmentId, Guid userId, CancellationToken ct);
+    Task RejectAdjustmentAsync(Guid adjustmentId, Guid userId, string reason, CancellationToken ct);
+    Task<PaginatedList<InventoryMovementDto>> GetMovementsAsync(InventoryQueryDto filter, Guid? forcedStationId, CancellationToken ct);
+    Task<PaginatedList<AdjustmentDto>> GetAdjustmentsAsync(InventoryQueryDto filter, Guid? forcedUserId, Guid? forcedStationId, CancellationToken ct);
 }

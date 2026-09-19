@@ -17,10 +17,12 @@ namespace CombustibleAPI.Api.Controllers;
 public class InventoryController : ControllerBase
 {
     private readonly IInventoryService _inventoryService;
+    private readonly ICurrentUserService _currentUser;
 
-    public InventoryController(IInventoryService inventoryService)
+    public InventoryController(IInventoryService inventoryService, ICurrentUserService currentUser)
     {
         _inventoryService = inventoryService;
+        _currentUser = currentUser;
     }
 
     /// <summary>
@@ -34,6 +36,9 @@ public class InventoryController : ControllerBase
         [FromRoute] short tipoCombustibleId,
         CancellationToken ct)
     {
+        if (string.Equals(_currentUser.Rol, "DESPACHADOR", StringComparison.OrdinalIgnoreCase) &&
+            _currentUser.EstacionId != estacionId)
+            return Forbid();
         var result = await _inventoryService.GetAvailabilityAsync(estacionId, tipoCombustibleId, ct);
         return Ok(ApiResponse<AvailabilityResponseDto>.Ok(result, HttpContext.GetTraceId()));
     }

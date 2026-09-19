@@ -112,4 +112,6 @@ public class MastersService : IMastersService
             })
             .ToListAsync(ct);
     }
+
+    public Task<List<ProveedorDto>> GetProveedoresAsync(CancellationToken ct) => _context.Proveedores.AsNoTracking().Where(x=>x.Activo).OrderBy(x=>x.Nombre).Select(x=>new ProveedorDto { Id=x.Id,Rnc=x.Rnc,Nombre=x.Nombre,NombreComercial=x.NombreComercial,Email=x.Email,Telefono=x.Telefono,Activo=x.Activo }).ToListAsync(ct);
 }
