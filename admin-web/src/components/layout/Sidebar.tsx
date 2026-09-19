@@ -6,8 +6,11 @@ import {
   UserCheck,
   Truck,
   Building2,
+  ClipboardCheck,
   Fuel,
-  ShieldAlert
+  ShieldAlert,
+  FileBarChart,
+  AlertTriangle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -51,6 +54,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
       icon: <Building2 className="w-5 h-5" />,
       allowedRoles: ['ADMINISTRADOR', 'SUPERVISOR', 'AUDITOR'],
     },
+    {
+      to: '/closures',
+      label: 'Cierres diarios',
+      icon: <ClipboardCheck className="w-5 h-5" />,
+      allowedRoles: ['ADMINISTRADOR', 'SUPERVISOR', 'DESPACHADOR'],
+    },
+    {
+        to: '/reports',
+        label: 'Reportes',
+        icon: <FileBarChart className="w-5 h-5" />,
+        allowedRoles: [
+          'ADMINISTRADOR',
+          'SUPERVISOR',
+          'AUDITOR',
+        ],
+      },
+      {
+        to: '/alerts',
+        label: 'Alertas',
+        icon: <AlertTriangle className="w-5 h-5" />,
+        allowedRoles: [
+          'ADMINISTRADOR',
+          'SUPERVISOR',
+          'AUDITOR',
+        ],
+      },
   ];
 
   const filteredNavItems = navItems.filter(item =>

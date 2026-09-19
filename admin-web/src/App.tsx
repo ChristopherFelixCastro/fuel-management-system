@@ -8,6 +8,9 @@ import { Users } from './pages/Users';
 import { Employees } from './pages/Employees';
 import { Vehicles } from './pages/Vehicles';
 import { Departments } from './pages/Departments';
+import { Closures } from './pages/Closures';
+import { Reports } from './pages/Reports';
+import { Alerts } from './pages/Alerts';
 
 export const App: React.FC = () => {
   return (
@@ -68,6 +71,43 @@ export const App: React.FC = () => {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="closures"
+          element={
+            <ProtectedRoute allowedRoles={['ADMINISTRADOR', 'SUPERVISOR', 'DESPACHADOR']}>
+              <Closures />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+  path="reports"
+  element={
+    <ProtectedRoute
+      allowedRoles={[
+        'ADMINISTRADOR',
+        'SUPERVISOR',
+        'AUDITOR',
+      ]}
+    >
+      <Reports />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="alerts"
+  element={
+    <ProtectedRoute
+      allowedRoles={[
+        'ADMINISTRADOR',
+        'SUPERVISOR',
+        'AUDITOR',
+      ]}
+    >
+      <Alerts />
+    </ProtectedRoute>
+  }
+/>
       </Route>
 
       {/* Fallback general */}

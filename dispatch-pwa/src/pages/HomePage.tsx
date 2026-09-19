@@ -98,9 +98,48 @@ export function HomePage() {
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
             </svg>
-            <span>Módulo de escaneo (Próximamente)</span>
+            <span>Escanear Ticket</span>
           </button>
         </section>
+
+        <section className="action-card closure-action-card">
+  <div className="action-main">
+    <div
+      className="action-icon-wrapper"
+      aria-hidden="true"
+    >
+      <svg
+        className="action-icon-svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M4 19V5" />
+        <path d="M4 19h16" />
+        <path d="M8 15l3-3 3 2 5-6" />
+      </svg>
+    </div>
+
+    <div className="action-details">
+      <h2>Cierre Diario</h2>
+      <p>
+        Consulta los movimientos del tanque, registra
+        la existencia física final y envía el cierre
+        para revisión del supervisor.
+      </p>
+    </div>
+  </div>
+
+  <button
+    type="button"
+    onClick={() => navigate('/closure')}
+  >
+    <span>Realizar cierre diario</span>
+  </button>
+</section>
       </div>
     </main>
   )

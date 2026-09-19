@@ -11,6 +11,7 @@ import { LoginPage } from './pages/LoginPage'
 import { ScanPage } from './pages/ScanPage'
 import { ProtectedRoute } from './routes/ProtectedRoute'
 import { TicketPage } from './pages/TicketPage'
+import { ClosurePage } from './pages/ClosurePage'
 export function App() {
   return (
     <AuthProvider>
@@ -22,6 +23,7 @@ export function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/scan" element={<ScanPage />} />
             <Route path="/ticket" element={<TicketPage />} />
+            <Route path="/closure" element={<ClosurePage />} />
           </Route>
 
           <Route

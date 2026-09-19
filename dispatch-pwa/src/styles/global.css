@@ -983,3 +983,231 @@ button, input, select, textarea {
     flex-direction: column;
   }
 }
+
+/* ==========================================================================
+   Cierre Diario
+   ========================================================================== */
+
+.closure-action-card {
+  margin-top: 1rem;
+}
+
+.closure-page {
+  min-height: 100dvh;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.closure-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.closure-header > div {
+  min-width: 0;
+}
+
+.closure-header h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  color: var(--slate-900);
+}
+
+.closure-header p {
+  margin: 0.25rem 0 0;
+  color: var(--slate-600);
+  font-size: 0.875rem;
+}
+
+.closure-card,
+.closure-success {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.closure-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.closure-card-heading {
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.closure-card-heading h2 {
+  margin: 0.15rem 0 0;
+  font-size: 1.05rem;
+  color: var(--slate-900);
+}
+
+.closure-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.closure-card select,
+.closure-card input,
+.closure-card textarea {
+  width: 100%;
+  border: 1.5px solid var(--slate-300);
+  border-radius: var(--radius-md);
+  background: white;
+  padding: 0.75rem;
+}
+
+.closure-card select,
+.closure-card input {
+  min-height: 3.125rem;
+}
+
+.closure-card textarea {
+  resize: vertical;
+}
+
+.closure-card select:focus,
+.closure-card input:focus,
+.closure-card textarea:focus {
+  outline: none;
+  border-color: var(--slate-900);
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.12);
+}
+
+.tank-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tank-summary span {
+  padding: 0.5rem 0.7rem;
+  background: var(--slate-100);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  color: var(--slate-600);
+  font-size: 0.8rem;
+}
+
+.closure-movements {
+  display: flex;
+  flex-direction: column;
+}
+
+.closure-movements > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--slate-100);
+}
+
+.closure-movements > div:last-child {
+  border-bottom: 0;
+}
+
+.closure-movements span {
+  color: var(--slate-600);
+  font-size: 0.875rem;
+}
+
+.closure-movements strong {
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.closure-theoretical {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--slate-900);
+  border-radius: var(--radius-lg);
+  color: white;
+}
+
+.closure-theoretical span {
+  color: var(--slate-300);
+  font-size: 0.875rem;
+}
+
+.closure-theoretical strong {
+  font-size: 1.2rem;
+}
+
+.closure-difference {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem;
+  background: var(--slate-100);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+}
+
+.closure-difference span {
+  color: var(--slate-600);
+}
+
+.closure-difference.has-difference {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.closure-difference.has-difference strong {
+  color: #9a3412;
+}
+
+.closure-warning {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem;
+  background: var(--slate-100);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  font-size: 0.825rem;
+}
+
+.closure-warning span {
+  color: var(--slate-600);
+}
+
+.closure-success {
+  margin-top: 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.closure-success > p:not(.success-label) {
+  color: var(--slate-600);
+}
+
+.closure-success h1 {
+  margin: 0.25rem 0;
+}
+
+@media (max-width: 520px) {
+  .closure-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .closure-header {
+    flex-direction: column;
+  }
+
+  .closure-header .button-secondary {
+    align-self: flex-start;
+  }
+}

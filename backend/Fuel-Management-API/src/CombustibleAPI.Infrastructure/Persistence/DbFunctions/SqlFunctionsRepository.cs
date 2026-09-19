@@ -227,8 +227,33 @@ public class SqlFunctionsRepository
         if (msg.Contains("CIERRE_YA_REVISADO", StringComparison.OrdinalIgnoreCase))
             return ApiException.Conflict("El cierre ya fue revisado.");
 
-        if (pgEx.SqlState == "23505") // Unique violation (e.g. ticket already dispatched)
-            return ApiException.DespachoDuplicado();
+        if (pgEx.SqlState == PostgresErrorCodes.UniqueViolation)
+        {
+            if (string.Equals(
+                pgEx.ConstraintName,
+                "uq_cierre_tanque_fecha_activo",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return ApiException.Conflict(
+                    "CLOSURE_ALREADY_EXISTS",
+                    "Ya existe un cierre activo para este tanque y fecha.");
+            }
+
+            if (
+                pgEx.ConstraintName?.Contains(
+                    "despacho",
+                    StringComparison.OrdinalIgnoreCase) == true ||
+                pgEx.ConstraintName?.Contains(
+                    "ticket",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return ApiException.DespachoDuplicado();
+            }
+
+            return ApiException.Conflict(
+                "DUPLICATE_RESOURCE",
+                "Ya existe un registro con los mismos datos únicos.");
+        }
 
         return ApiException.BusinessRule("OPERACION_FALLIDA", msg);
     }

@@ -282,3 +282,132 @@ export async function apiRequest<T>(
     errors: [],
   };
 }
+
+export interface ApiFileResponse {
+  blob: Blob;
+  fileName: string;
+  contentType: string;
+}
+
+function getFileNameFromDisposition(
+  contentDisposition: string | null,
+): string | null {
+  if (!contentDisposition) {
+    return null;
+  }
+
+  const utf8Match = contentDisposition.match(
+    /filename\*=UTF-8''([^;]+)/i,
+  );
+
+  if (utf8Match?.[1]) {
+    try {
+      return decodeURIComponent(utf8Match[1]);
+    } catch {
+      return utf8Match[1];
+    }
+  }
+
+  const regularMatch = contentDisposition.match(
+    /filename="?([^";]+)"?/i,
+  );
+
+  return regularMatch?.[1] ?? null;
+}
+
+export async function apiDownload(
+  endpoint: string,
+): Promise<ApiFileResponse> {
+  const url =
+    `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+
+  const execute = (token: string | null) =>
+    fetch(url, {
+      method: 'GET',
+      headers: buildHeaders({}, token),
+    });
+
+  let response: Response;
+
+  try {
+    response = await execute(getAccessToken());
+  } catch (error) {
+    const err = error as Error;
+
+    throw new ApiError(
+      err.message || 'No fue posible conectar con el servidor.',
+      0,
+      [
+        {
+          code: 'NETWORK_ERROR',
+          detail: err.message || 'Error de red',
+        },
+      ],
+    );
+  }
+
+  if (response.status === 401 && getRefreshToken()) {
+    const refreshed = await refreshAccessToken();
+
+    if (refreshed) {
+      response = await execute(getAccessToken());
+    }
+  }
+
+  if (response.status === 401) {
+    clearTokens();
+    localStorage.removeItem('fms_auth_user');
+
+    window.dispatchEvent(
+      new CustomEvent('fms:auth-unauthorized'),
+    );
+
+    throw await readCoreError(
+      response,
+      'La sesión expiró. Inicie sesión nuevamente.',
+    );
+  }
+
+  if (!response.ok) {
+    throw await readCoreError(
+      response,
+      response.status === 403
+        ? 'No posee permisos para realizar esta operación.'
+        : 'Error al exportar el reporte.',
+    );
+  }
+
+  const blob = await response.blob();
+
+  const contentDisposition = response.headers.get(
+    'Content-Disposition',
+  );
+
+  const fileName =
+    getFileNameFromDisposition(contentDisposition) ??
+    'reporte';
+
+  return {
+    blob,
+    fileName,
+    contentType:
+      response.headers.get('Content-Type') ??
+      'application/octet-stream',
+  };
+}
+
+export function saveDownloadedFile(
+  file: ApiFileResponse,
+): void {
+  const objectUrl = URL.createObjectURL(file.blob);
+
+  const anchor = document.createElement('a');
+  anchor.href = objectUrl;
+  anchor.download = file.fileName;
+
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+
+  URL.revokeObjectURL(objectUrl);
+}
