@@ -10,12 +10,15 @@ import {
 } from 'lucide-react';
 import { Vehicle, Department, FuelType, CreateVehicleDto } from '../types';
 import { VehicleService, DepartmentService, CatalogService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { AlertBanner } from '../components/common/AlertBanner';
 import { StatusBadge } from '../components/common/Badge';
 import { ConfirmModal } from '../components/common/ConfirmModal';
 
 export const Vehicles: React.FC = () => {
+  const { hasRole } = useAuth();
+  const isAdmin = hasRole(['ADMINISTRADOR']);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [fuelTypes, setFuelTypes] = useState<FuelType[]>([]);
@@ -194,13 +197,15 @@ export const Vehicles: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#087e8b] hover:bg-[#066570] text-white text-xs font-semibold rounded-lg shadow-sm transition self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Nuevo Vehículo</span>
-        </button>
+        {isAdmin && (
+          <button
+            onClick={handleOpenCreate}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#087e8b] hover:bg-[#066570] text-white text-xs font-semibold rounded-lg shadow-sm transition self-start sm:self-auto"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Nuevo Vehículo</span>
+          </button>
+        )}
       </div>
 
       {alert && (
@@ -287,7 +292,7 @@ export const Vehicles: React.FC = () => {
                   <th className="py-3 px-4 text-right">Capacidad Tanque</th>
                   <th className="py-3 px-4 text-right">Odómetro Actual</th>
                   <th className="py-3 px-4 text-center">Estado</th>
-                  <th className="py-3 px-4 text-right">Acciones</th>
+                  {isAdmin && <th className="py-3 px-4 text-right">Acciones</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -328,26 +333,28 @@ export const Vehicles: React.FC = () => {
                     <td className="py-3 px-4 text-center">
                       <StatusBadge isActive={v.isActive} />
                     </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => handleOpenEdit(v)}
-                          title="Editar vehículo"
-                          className="p-1.5 text-slate-500 hover:text-[#087e8b] hover:bg-slate-100 rounded-lg transition"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => setVehicleToToggle(v)}
-                          title="Desactivar vehículo"
-                          className={`p-1.5 rounded-lg transition ${
-                            v.isActive ? 'text-slate-500 hover:text-amber-600 hover:bg-amber-50' : 'hidden'
-                          }`}
-                        >
-                          <Power className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+                    {isAdmin && (
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => handleOpenEdit(v)}
+                            title="Editar vehículo"
+                            className="p-1.5 text-slate-500 hover:text-[#087e8b] hover:bg-slate-100 rounded-lg transition"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setVehicleToToggle(v)}
+                            title="Desactivar vehículo"
+                            className={`p-1.5 rounded-lg transition ${
+                              v.isActive ? 'text-slate-500 hover:text-amber-600 hover:bg-amber-50' : 'hidden'
+                            }`}
+                          >
+                            <Power className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

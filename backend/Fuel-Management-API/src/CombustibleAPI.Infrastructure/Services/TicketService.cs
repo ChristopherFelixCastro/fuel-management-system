@@ -354,6 +354,7 @@ public class TicketService : ITicketService
     CancellationToken ct)
     {
         var ticket = await _context.Tickets
+            .Include(t => t.Solicitud)
             .AsNoTracking()
             .FirstOrDefaultAsync(
                 t => t.Id == ticketId,
@@ -362,6 +363,31 @@ public class TicketService : ITicketService
         if (ticket is null)
         {
             throw ApiException.TicketInexistente();
+        }
+
+        if (string.Equals(_currentUser.Rol, "SOLICITANTE", StringComparison.OrdinalIgnoreCase))
+        {
+            var usuarioId = _currentUser.UsuarioId;
+            var esPropietario = ticket.Solicitud != null && (ticket.Solicitud.CreadaPorUsuarioId == usuarioId);
+
+            if (!esPropietario && usuarioId.HasValue && ticket.Solicitud != null)
+            {
+                var empleadoIdUsuario = await _context.Usuarios
+                    .Where(u => u.Id == usuarioId.Value)
+                    .Select(u => u.EmpleadoId)
+                    .FirstOrDefaultAsync(ct);
+
+                if (empleadoIdUsuario.HasValue && ticket.Solicitud.EmpleadoId == empleadoIdUsuario.Value)
+                {
+                    esPropietario = true;
+                }
+            }
+
+            if (!esPropietario)
+            {
+                throw ApiException.Forbidden(
+                    "Un solicitante solo puede consultar el QR de sus propios tickets.");
+            }
         }
 
         // Solamente los tickets emitidos y todavía utilizables

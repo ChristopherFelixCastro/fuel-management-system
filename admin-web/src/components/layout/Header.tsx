@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Menu,
   LogOut,
-  Server,
   User as UserIcon,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { RoleBadge } from '../common/Badge';
+import { ConfirmModal } from '../common/ConfirmModal';
 
 interface HeaderProps {
   onOpenMobileMenu: () => void;
@@ -16,6 +16,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMobileMenu,
 }) => {
   const { user, logout } = useAuth();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between shadow-xs">
@@ -29,30 +31,36 @@ export const Header: React.FC<HeaderProps> = ({
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="hidden sm:flex flex-col">
-          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">
-            Sistema de Gestión de Combustible
+        <div className="flex items-center gap-2.5 lg:hidden">
+          <div className="h-8 w-8 overflow-hidden rounded-lg border border-slate-200 bg-white p-1">
+            <img
+              src="/GasolinaLogo.png"
+              alt="Logo de La Bomba"
+              className="h-full w-full object-contain"
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-bold leading-tight text-slate-900">
+              La Bomba
+            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+              Administración
+            </span>
+          </div>
+        </div>
+
+        <div className="hidden lg:flex flex-col">
+          <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">
+            Portal administrativo
           </span>
           <span className="text-sm font-semibold text-slate-800">
-            Administración Central y Maestros
+            Administración de La Bomba
           </span>
         </div>
       </div>
 
       {/* Right section */}
       <div className="flex items-center gap-2 sm:gap-4">
-        {/* Indicador informativo de conexión */}
-        <div
-          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-300"
-          title="Portal conectado al API principal"
-        >
-          <Server className="w-3.5 h-3.5 text-emerald-600" />
-          <span className="hidden md:inline">
-            API .NET 8
-          </span>
-          <span className="md:hidden">API</span>
-        </div>
-
         {/* Usuario autenticado */}
         {user ? (
           <div className="flex items-center gap-3 pl-2 border-l border-slate-200">
@@ -71,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             <button
-              onClick={() => void logout()}
+              onClick={() => setShowLogoutConfirm(true)}
               title="Cerrar sesión"
               className="p-2 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition"
               aria-label="Cerrar sesión"
@@ -86,6 +94,31 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        title="Cerrar sesión"
+        message="¿Estás seguro de que deseas salir de la plataforma La Bomba?"
+        confirmLabel="Cerrar sesión"
+        cancelLabel="Cancelar"
+        isDestructive={true}
+        isLoading={isLoggingOut}
+        onConfirm={async () => {
+          if (isLoggingOut) return;
+          setIsLoggingOut(true);
+          try {
+            await logout();
+          } finally {
+            setIsLoggingOut(false);
+            setShowLogoutConfirm(false);
+          }
+        }}
+        onClose={() => {
+          if (!isLoggingOut) {
+            setShowLogoutConfirm(false);
+          }
+        }}
+      />
     </header>
   );
 };

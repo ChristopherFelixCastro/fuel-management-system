@@ -29,7 +29,7 @@ public class TicketsController : ControllerBase
     /// </summary>
     [HttpGet("{ticketId:guid}/qr")]
     [Authorize(
-        Roles = "SUPERVISOR,ADMINISTRADOR")]
+        Roles = "SOLICITANTE,SUPERVISOR,ADMINISTRADOR")]
     [Produces("image/png")]
     [ProducesResponseType(200)]
     [ProducesResponseType(

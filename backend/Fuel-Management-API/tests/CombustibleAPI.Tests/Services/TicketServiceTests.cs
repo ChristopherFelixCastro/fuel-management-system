@@ -163,7 +163,8 @@ public class TicketServiceTests
     private static TicketService CreateService(
         AppDbContext context,
         Guid? estacionId,
-        string rol = "DESPACHADOR")
+        string rol = "DESPACHADOR",
+        Guid? usuarioId = null)
     {
         return new TicketService(
             context,
@@ -171,6 +172,7 @@ public class TicketServiceTests
             new FakeQrCodeService(),
             new FakeCurrentUserService
             {
+                UsuarioId = usuarioId ?? Guid.NewGuid(),
                 Rol = rol,
                 EstacionId = estacionId
             });
@@ -488,5 +490,120 @@ public class TicketServiceTests
 
         exception.Which.Code.Should()
             .Be("FORBIDDEN");
+    }
+
+    [Fact]
+    public async Task ObtenerQrPngAsync_SolicitantePropietario_RetornaPng()
+    {
+        using var context = CreateInMemoryContext();
+        var usuarioId = Guid.NewGuid();
+
+        var solicitud = new Solicitud
+        {
+            Id = Guid.NewGuid(),
+            CreadaPorUsuarioId = usuarioId,
+            Estado = "APROBADA",
+            CantidadSolicitada = 10
+        };
+        context.Solicitudes.Add(solicitud);
+
+        var ticket = new Ticket
+        {
+            Id = Guid.NewGuid(),
+            SolicitudId = solicitud.Id,
+            Solicitud = solicitud,
+            NumeroTicket = "COM-2026-100001",
+            Estado = "CREADO",
+            TokenQrHash = TokenHash,
+            FirmaQr = Signature,
+            CantidadAutorizada = 10,
+            FechaExpiracion = DateTime.UtcNow.AddDays(5)
+        };
+        context.Tickets.Add(ticket);
+        await context.SaveChangesAsync();
+
+        var sut = CreateService(context, null, rol: "SOLICITANTE", usuarioId: usuarioId);
+
+        var result = await sut.ObtenerQrPngAsync(ticket.Id, CancellationToken.None);
+
+        result.Should().NotBeNull();
+        result.Length.Should().BeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task ObtenerQrPngAsync_SolicitanteNoPropietario_LanzaForbidden()
+    {
+        using var context = CreateInMemoryContext();
+        var duenioId = Guid.NewGuid();
+        var otroUsuarioId = Guid.NewGuid();
+
+        var solicitud = new Solicitud
+        {
+            Id = Guid.NewGuid(),
+            CreadaPorUsuarioId = duenioId,
+            Estado = "APROBADA",
+            CantidadSolicitada = 10
+        };
+        context.Solicitudes.Add(solicitud);
+
+        var ticket = new Ticket
+        {
+            Id = Guid.NewGuid(),
+            SolicitudId = solicitud.Id,
+            Solicitud = solicitud,
+            NumeroTicket = "COM-2026-100002",
+            Estado = "CREADO",
+            TokenQrHash = TokenHash,
+            FirmaQr = Signature,
+            CantidadAutorizada = 10,
+            FechaExpiracion = DateTime.UtcNow.AddDays(5)
+        };
+        context.Tickets.Add(ticket);
+        await context.SaveChangesAsync();
+
+        var sut = CreateService(context, null, rol: "SOLICITANTE", usuarioId: otroUsuarioId);
+
+        var act = () => sut.ObtenerQrPngAsync(ticket.Id, CancellationToken.None);
+
+        var exception = await act.Should().ThrowAsync<ApiException>();
+        exception.Which.Code.Should().Be("FORBIDDEN");
+    }
+
+    [Fact]
+    public async Task ObtenerQrPngAsync_Supervisor_RetornaPng()
+    {
+        using var context = CreateInMemoryContext();
+        var duenioId = Guid.NewGuid();
+
+        var solicitud = new Solicitud
+        {
+            Id = Guid.NewGuid(),
+            CreadaPorUsuarioId = duenioId,
+            Estado = "APROBADA",
+            CantidadSolicitada = 10
+        };
+        context.Solicitudes.Add(solicitud);
+
+        var ticket = new Ticket
+        {
+            Id = Guid.NewGuid(),
+            SolicitudId = solicitud.Id,
+            Solicitud = solicitud,
+            NumeroTicket = "COM-2026-100003",
+            Estado = "CREADO",
+            TokenQrHash = TokenHash,
+            FirmaQr = Signature,
+            CantidadAutorizada = 10,
+            FechaExpiracion = DateTime.UtcNow.AddDays(5)
+        };
+        context.Tickets.Add(ticket);
+        await context.SaveChangesAsync();
+
+        var sut = CreateService(context, null, rol: "SUPERVISOR", usuarioId: Guid.NewGuid());
+
+        var result = await sut.ObtenerQrPngAsync(ticket.Id, CancellationToken.None);
+
+        result.Should().NotBeNull();
+        result.Length.Should().BeGreaterThan(0);
     }
 }

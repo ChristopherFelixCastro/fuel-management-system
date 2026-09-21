@@ -7,7 +7,7 @@ export const MainLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#eef4f7] flex">
+    <div className="min-h-screen bg-slate-50 flex">
       {/* Sidebar fijo en escritorio, deslizable en móvil */}
       <Sidebar
         isOpen={isMobileMenuOpen}

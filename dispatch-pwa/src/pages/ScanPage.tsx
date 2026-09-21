@@ -142,7 +142,6 @@ export function ScanPage() {
             setIsProcessing(true)
             setError(null)
 
-            
             try {
               const ticket =
                 await ticketsApi.validateQr(
@@ -152,8 +151,6 @@ export function ScanPage() {
                     refreshSession,
                   },
                 )
-
-              
 
               /*
                * Si el QR anteriormente había sido
@@ -271,13 +268,8 @@ export function ScanPage() {
       </header>
 
       <section className="scanner-card">
-        <div
-          id={READER_ID}
-          className="qr-reader"
-        />
-
         {isProcessing && (
-          <div className="scanner-status">
+          <div className="scanner-status" style={{ marginBottom: '1rem' }}>
             <span className="spinner" />
             <span>Validando ticket...</span>
           </div>
@@ -287,11 +279,17 @@ export function ScanPage() {
           <div
             className="scanner-error"
             role="alert"
+            style={{ marginBottom: '1rem' }}
           >
             <strong>No se puede continuar</strong>
             <span>{error}</span>
           </div>
         )}
+
+        <div
+          id={READER_ID}
+          className="qr-reader"
+        />
 
         <p className="scanner-help">
           La validación requiere conexión con el

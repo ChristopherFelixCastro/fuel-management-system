@@ -458,3 +458,64 @@ export interface LowInventoryAlert {
 
   mensaje: string;
 }
+
+// ================= SOLICITUDES DE COMBUSTIBLE =================
+
+export interface FuelRequest {
+  id: string;
+  empleadoId: string;
+  empleadoNombre?: string;
+  vehiculoId: string;
+  vehiculoPlaca?: string;
+  vehiculoFicha?: string;
+  departamentoId: string;
+  departamentoNombre?: string;
+  tipoCombustibleId: number;
+  tipoCombustible?: string;
+  cantidadSolicitada: number;
+  cantidadAutorizada?: number | null;
+  estado: string; // PENDIENTE | APROBADA | RECHAZADA | CANCELADA
+  tipoSolicitud: string;
+  fechaSolicitud: string;
+  fechaRevision?: string | null;
+  motivoRechazo?: string | null;
+  motivoCancelacion?: string | null;
+  observaciones?: string | null;
+  ticketId?: string | null;
+  numeroTicket?: string | null;
+}
+
+export interface CreateFuelRequestDto {
+  empleadoId: string;
+  vehiculoId: string;
+  departamentoId: string;
+  cantidadSolicitada: number;
+  tipoSolicitud?: string;
+  observaciones?: string;
+}
+
+export interface ApproveFuelRequestDto {
+  estacionId: string;
+  cantidadAutorizada: number;
+  fechaExpiracion: string;
+  observaciones?: string;
+}
+
+export interface RejectFuelRequestDto {
+  motivo: string;
+}
+
+export interface CancelFuelRequestDto {
+  motivo?: string;
+}
+
+export interface FuelRequestFilter {
+  estado?: string;
+  empleadoId?: string;
+  vehiculoId?: string;
+  departamentoId?: string;
+  fechaInicio?: string;
+  fechaFin?: string;
+  page?: number;
+  pageSize?: number;
+}

@@ -1,4 +1,4 @@
-﻿using CombustibleAPI.Application.Dtos.Dispatches;
+using CombustibleAPI.Application.Dtos.Dispatches;
 using CombustibleAPI.Application.Dtos.Requests;
 using CombustibleAPI.Application.Exceptions;
 using CombustibleAPI.Application.Interfaces;
@@ -38,9 +38,31 @@ public sealed class RequestService : IRequestService
             throw ApiException.ValidationError(
                 "La cantidad solicitada debe ser mayor a cero.");
 
+        var usuario = await _context.Usuarios
+            .Include(u => u.Rol)
+            .FirstOrDefaultAsync(u => u.Id == usuarioId, ct);
+
+        if (usuario?.Rol != null && string.Equals(usuario.Rol.Nombre, "SOLICITANTE", StringComparison.OrdinalIgnoreCase))
+        {
+            if (dto.EmpleadoId == Guid.Empty && usuario.EmpleadoId.HasValue)
+            {
+                dto.EmpleadoId = usuario.EmpleadoId.Value;
+            }
+            else if (usuario.EmpleadoId.HasValue && usuario.EmpleadoId.Value != dto.EmpleadoId)
+            {
+                throw ApiException.Forbidden(
+                    "Un solicitante solo puede crear solicitudes a su propio nombre.");
+            }
+        }
+
         var empleado = await _context.Empleados
             .FirstOrDefaultAsync(x => x.Id == dto.EmpleadoId && x.Activo, ct)
             ?? throw ApiException.NotFound("Empleado");
+
+        if (dto.DepartamentoId == Guid.Empty)
+        {
+            dto.DepartamentoId = empleado.DepartamentoId;
+        }
 
         var vehiculo = await _context.Vehiculos
             .FirstOrDefaultAsync(x => x.Id == dto.VehiculoId && x.Activo, ct)
@@ -151,13 +173,40 @@ public sealed class RequestService : IRequestService
             .Take(size)
             .ToListAsync(ct);
 
+        var requestIds = rows.Select(x => x.Id).ToList();
+
+        var tickets = await _context.Tickets
+            .AsNoTracking()
+            .Where(t => requestIds.Contains(t.SolicitudId))
+            .Select(t => new
+            {
+                t.Id,
+                t.SolicitudId,
+                t.NumeroTicket
+            })
+            .ToListAsync(ct);
+
+        var ticketsMap = tickets
+            .GroupBy(t => t.SolicitudId)
+            .ToDictionary(g => g.Key, g => g.First());
+
+        var items = rows.Select(s =>
+        {
+            var dto = Map(s);
+            if (ticketsMap.TryGetValue(s.Id, out var ticket))
+            {
+                dto.TicketId = ticket.Id;
+                dto.NumeroTicket = ticket.NumeroTicket;
+            }
+            return dto;
+        }).ToList();
+
         return new PaginatedList<RequestResponseDto>(
-            rows.Select(Map).ToList(),
+            items,
             total,
             page,
             size);
     }
-
     public async Task<RequestResponseDto> ObtenerAsync(
         Guid id,
         Guid usuarioId,

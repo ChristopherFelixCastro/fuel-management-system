@@ -37,7 +37,7 @@ function getErrorMessage(error: unknown): string {
     return error.message
   }
 
-  return 'Ocurri� un error inesperado.'
+  return 'Ocurrió un error inesperado.'
 }
 
 export function ClosurePage() {
@@ -198,7 +198,7 @@ export function ClosurePage() {
       stock < 0
     ) {
       setError(
-        'Ingresa una existencia f�sica final v�lida.',
+        'Ingresa una existencia física final válida.',
       )
       return
     }
@@ -208,7 +208,7 @@ export function ClosurePage() {
       differenceReason.trim().length === 0
     ) {
       setError(
-        'Debes indicar el motivo de la diferencia entre la existencia f�sica y la te�rica.',
+        'Debes indicar el motivo de la diferencia entre la existencia física y la teórica.',
       )
       return
     }
@@ -253,7 +253,7 @@ export function ClosurePage() {
             className="success-icon"
             aria-hidden="true"
           >
-            ?
+            ✓
           </div>
 
           <p className="success-label">
@@ -263,7 +263,7 @@ export function ClosurePage() {
           <h1>Cierre diario enviado</h1>
 
           <p>
-            El cierre qued� pendiente de revisi�n por
+            El cierre quedó pendiente de revisión por
             un supervisor.
           </p>
 
@@ -285,7 +285,7 @@ export function ClosurePage() {
             </div>
 
             <div>
-              <span>Existencia te�rica</span>
+              <span>Existencia teórica</span>
               <strong>
                 {gallons(
                   createdClosure.stockTeoricoFinal,
@@ -294,7 +294,7 @@ export function ClosurePage() {
             </div>
 
             <div>
-              <span>Existencia f�sica</span>
+              <span>Existencia física</span>
               <strong>
                 {gallons(
                   createdClosure.stockFisicoFinal,
@@ -342,13 +342,13 @@ export function ClosurePage() {
           className="button-secondary"
           onClick={() => navigate('/')}
         >
-          ? Volver
+          ← Volver
         </button>
 
         <div>
           <h1>Cierre diario</h1>
           <p>
-            Registra la medici�n f�sica final de cada
+            Registra la medición física final de cada
             tanque al finalizar la jornada.
           </p>
         </div>
@@ -389,7 +389,7 @@ export function ClosurePage() {
                   key={tank.id}
                   value={tank.id}
                 >
-                  {tank.codigo} � {tank.nombre} �{' '}
+                  {tank.codigo} · {tank.nombre} ·{' '}
                   {tank.combustibleNombre}
                 </option>
               ))}
@@ -550,7 +550,7 @@ export function ClosurePage() {
             </div>
 
             <div className="closure-theoretical">
-              <span>Existencia te�rica final</span>
+              <span>Existencia teórica final</span>
               <strong>
                 {gallons(
                   preview.stockTeoricoFinal,
@@ -568,13 +568,13 @@ export function ClosurePage() {
                 <span className="ticket-label">
                   Paso 3
                 </span>
-                <h2>Medici�n f�sica</h2>
+                <h2>Medición física</h2>
               </div>
             </div>
 
             <div className="form-group">
               <label htmlFor="physical-stock">
-                Existencia f�sica final (galones)
+                Existencia física final (galones)
               </label>
 
               <input
@@ -645,17 +645,17 @@ export function ClosurePage() {
                     event.target.value,
                   )
                 }
-                placeholder="Informaci�n adicional del cierre (opcional)."
+                placeholder="Información adicional del cierre (opcional)."
               />
             </div>
 
             <div className="closure-warning">
               <strong>
-                Verifica la medici�n antes de continuar.
+                Verifica la medición antes de continuar.
               </strong>
               <span>
-                Una vez registrado, el cierre quedar�
-                pendiente de aprobaci�n del supervisor.
+                Una vez registrado, el cierre quedará
+                pendiente de aprobación del supervisor.
               </span>
             </div>
 

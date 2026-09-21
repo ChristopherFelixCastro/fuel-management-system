@@ -33,6 +33,10 @@ import {
   ReportFormat,
   LowInventoryAlertFilters,
 LowInventoryAlert,
+  FuelRequest,
+  CreateFuelRequestDto,
+  ApproveFuelRequestDto,
+  FuelRequestFilter,
 } from '../types';
 
 import {
@@ -635,6 +639,27 @@ export const CatalogService = {
     );
   },
 
+  async getVehicles() {
+    return apiRequest<
+      Array<{
+        id: string;
+        placa: string;
+        ficha: string;
+        marca?: string | null;
+        modelo?: string | null;
+        anio?: number | null;
+        tipoVehiculo?: string | null;
+        capacidadTanque: number;
+        odometroActual: number;
+        tipoCombustibleId: number;
+        combustibleNombre?: string | null;
+        departamentoId: string;
+        departamentoNombre?: string | null;
+        activo: boolean;
+      }>
+    >('/masters/vehiculos');
+  },
+
   async getTanks() {
     return mapped(
       await apiRequest<CoreTank[]>(
@@ -996,4 +1021,52 @@ export const AlertService = {
       `/alerts/low-inventory?${query.toString()}`,
     );
   },
+};
+
+// ================= SOLICITUDES =================
+
+export const RequestService = {
+  create: (dto: CreateFuelRequestDto) =>
+    apiRequest<FuelRequest>('/requests', {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    }),
+
+  getAll: (filters?: FuelRequestFilter) => {
+    const params = new URLSearchParams();
+    if (filters?.estado) params.append('estado', filters.estado);
+    if (filters?.empleadoId) params.append('empleadoId', filters.empleadoId);
+    if (filters?.vehiculoId) params.append('vehiculoId', filters.vehiculoId);
+    if (filters?.departamentoId) params.append('departamentoId', filters.departamentoId);
+    if (filters?.fechaInicio) params.append('fechaInicio', filters.fechaInicio);
+    if (filters?.fechaFin) params.append('fechaFin', filters.fechaFin);
+    if (filters?.page) params.append('page', String(filters.page));
+    if (filters?.pageSize) params.append('pageSize', String(filters.pageSize));
+    const query = params.toString();
+    return apiRequest<PaginatedResult<FuelRequest>>(
+      `/requests${query ? `?${query}` : ''}`,
+    );
+  },
+
+  getById: (id: string) => apiRequest<FuelRequest>(`/requests/${id}`),
+
+  cancel: (id: string, motivo?: string) =>
+    apiRequest<FuelRequest>(`/requests/${id}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ motivo }),
+    }),
+
+  approve: (id: string, dto: ApproveFuelRequestDto) =>
+    apiRequest<FuelRequest>(`/requests/${id}/approve`, {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    }),
+
+  reject: (id: string, motivo: string) =>
+    apiRequest<FuelRequest>(`/requests/${id}/reject`, {
+      method: 'POST',
+      body: JSON.stringify({ motivo }),
+    }),
+
+  getTicketQr: (ticketId: string) => apiDownload(`/tickets/${ticketId}/qr`),
 };

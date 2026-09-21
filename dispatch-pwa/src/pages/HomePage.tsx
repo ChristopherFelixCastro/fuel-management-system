@@ -11,11 +11,11 @@ export function HomePage() {
         <div className="topbar-brand">
           <img
             src="/GasolinaLogo.png"
-            alt="PetroDespacho"
+            alt="La Bomba"
             className="topbar-logo"
           />
           <div className="topbar-info">
-            <span className="topbar-title">PetroDespacho</span>
+            <span className="topbar-title">La Bomba</span>
             <span className="topbar-subtitle">Terminal de Servicio</span>
           </div>
         </div>
@@ -43,15 +43,14 @@ export function HomePage() {
           </span>
 
           <span
-  style={{
-    fontSize: '0.75rem',
-    opacity: 0.8,
-    letterSpacing: '0.04em',
-  }}
->
-  ID: {user?.id.slice(0, 8).toUpperCase() ?? 'N/D'}
-</span>
-        
+            style={{
+              fontSize: '0.75rem',
+              opacity: 0.8,
+              letterSpacing: '0.04em',
+            }}
+          >
+            ID: {user?.id.slice(0, 8).toUpperCase() ?? 'N/D'}
+          </span>
         </div>
         <h1 className="operator-name">{user?.name ?? 'Operador'}</h1>
         <p className="operator-station">
@@ -59,9 +58,9 @@ export function HomePage() {
             <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
-         <span>
-             Estación asignada · {user?.stationId.slice(0, 8).toUpperCase() ?? 'N/D'}
-        </span>
+          <span>
+            Estación asignada · {user?.stationId.slice(0, 8).toUpperCase() ?? 'N/D'}
+          </span>
         </p>
       </section>
 
@@ -90,10 +89,10 @@ export function HomePage() {
           </div>
 
           <button
-                type="button"
-                onClick={() => navigate('/scan')}
-                title="Escanear un ticket QR"
-              >
+            type="button"
+            onClick={() => navigate('/scan')}
+            title="Escanear un ticket QR"
+          >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
@@ -103,43 +102,43 @@ export function HomePage() {
         </section>
 
         <section className="action-card closure-action-card">
-  <div className="action-main">
-    <div
-      className="action-icon-wrapper"
-      aria-hidden="true"
-    >
-      <svg
-        className="action-icon-svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M4 19V5" />
-        <path d="M4 19h16" />
-        <path d="M8 15l3-3 3 2 5-6" />
-      </svg>
-    </div>
+          <div className="action-main">
+            <div
+              className="action-icon-wrapper"
+              aria-hidden="true"
+            >
+              <svg
+                className="action-icon-svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4 19V5" />
+                <path d="M4 19h16" />
+                <path d="M8 15l3-3 3 2 5-6" />
+              </svg>
+            </div>
 
-    <div className="action-details">
-      <h2>Cierre Diario</h2>
-      <p>
-        Consulta los movimientos del tanque, registra
-        la existencia física final y envía el cierre
-        para revisión del supervisor.
-      </p>
-    </div>
-  </div>
+            <div className="action-details">
+              <h2>Cierre Diario</h2>
+              <p>
+                Consulta los movimientos del tanque, registra
+                la existencia física final y envía el cierre
+                para revisión del supervisor.
+              </p>
+            </div>
+          </div>
 
-  <button
-    type="button"
-    onClick={() => navigate('/closure')}
-  >
-    <span>Realizar cierre diario</span>
-  </button>
-</section>
+          <button
+            type="button"
+            onClick={() => navigate('/closure')}
+          >
+            <span>Realizar cierre diario</span>
+          </button>
+        </section>
         <section className="action-card"><div className="action-details"><h2>Inventario</h2><p>Consulta las existencias de tu estación.</p></div><button type="button" onClick={() => navigate('/inventory')}>Ver existencias</button></section>
         <section className="action-card"><div className="action-details"><h2>Ajuste de inventario</h2><p>Reporta un conteo físico para revisión.</p></div><button type="button" onClick={() => navigate('/adjustment')}>Reportar ajuste</button></section>
       </div>

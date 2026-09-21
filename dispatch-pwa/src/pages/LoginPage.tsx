@@ -13,7 +13,7 @@ export function LoginPage() {
           <div className="brand-logo-container">
             <img
               src="/GasolinaLogo.png"
-              alt="Logotipo de PetroDespacho"
+              alt="Logotipo de La Bomba"
               className="brand-logo"
             />
           </div>

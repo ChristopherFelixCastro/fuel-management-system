@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Fuel, Lock, User, AlertCircle } from 'lucide-react';
+import { Lock, User, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const Login: React.FC = () => {
@@ -31,21 +31,30 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#062d4f] via-[#074b68] to-[#087e8b] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="inline-flex items-center justify-center p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl mb-4">
-          <Fuel className="w-10 h-10 text-cyan-300" />
+    <div className="relative min-h-screen overflow-hidden bg-slate-50 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8">
+      <div className="absolute inset-x-0 top-0 h-1 bg-[#f03030]" aria-hidden="true" />
+
+      <div className="mx-auto w-full max-w-md text-center">
+        <div className="inline-flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+          <img
+            src="/GasolinaLogo.png"
+            alt="Logo de La Bomba"
+            className="h-full w-full object-contain"
+          />
         </div>
-        <h2 className="text-3xl font-extrabold text-white tracking-tight">
-          Portal Administrativo
-        </h2>
-        <p className="mt-2 text-sm text-cyan-100 font-medium">
-          Gestión de Tickets Digitales e Inventario de Combustible
+        <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-[#087e8b]">
+          Portal administrativo
+        </p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">
+          Administración de La Bomba
+        </h1>
+        <p className="mt-2 text-sm text-slate-600">
+          Gestión de combustible y tickets digitales
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 shadow-2xl rounded-2xl sm:px-10 border border-slate-100">
+      <div className="mt-8 mx-auto w-full max-w-md">
+        <div className="bg-white py-8 px-6 shadow-xl rounded-2xl sm:px-10 border border-slate-200">
           {errorMessage && (
             <div className="mb-5 p-3.5 bg-rose-50 border border-rose-200 rounded-lg flex items-start gap-3 text-rose-800 text-sm">
               <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
@@ -57,11 +66,11 @@ export const Login: React.FC = () => {
             <div>
               <label
                 htmlFor="usernameOrEmail"
-                className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5"
+                className="block text-sm font-semibold text-slate-700 mb-1.5"
               >
                 Usuario o Correo Electrónico
               </label>
-              <div className="relative rounded-lg shadow-2xs">
+              <div className="relative rounded-lg">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <User className="w-4 h-4" />
                 </div>
@@ -73,7 +82,7 @@ export const Login: React.FC = () => {
                   value={usernameOrEmail}
                   onChange={e => setUsernameOrEmail(e.target.value)}
                   placeholder="ej. admin o usuario@empresa.com"
-                  className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#087e8b] focus:border-[#087e8b] transition"
+                  className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#087e8b] focus:border-[#087e8b] transition"
                 />
               </div>
             </div>
@@ -81,11 +90,11 @@ export const Login: React.FC = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5"
+                className="block text-sm font-semibold text-slate-700 mb-1.5"
               >
                 Contraseña
               </label>
-              <div className="relative rounded-lg shadow-2xs">
+              <div className="relative rounded-lg">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <Lock className="w-4 h-4" />
                 </div>
@@ -97,7 +106,7 @@ export const Login: React.FC = () => {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#087e8b] focus:border-[#087e8b] transition"
+                  className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#087e8b] focus:border-[#087e8b] transition"
                 />
               </div>
             </div>
@@ -105,7 +114,7 @@ export const Login: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-[#087e8b] hover:bg-[#066570] focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-[#087e8b] transition disabled:opacity-50"
+              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-[#087e8b] hover:bg-[#066570] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#087e8b] transition disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? 'Iniciando sesión...' : 'Ingresar al Portal'}
             </button>

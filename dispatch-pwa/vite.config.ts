@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['fuel-pump.svg', 'GasolinaLogo.png'],
       manifest: {
-        name: 'PetroDespacho Terminal',
-        short_name: 'PetroDespacho',
+        name: 'La Bomba - Terminal de Despacho',
+        short_name: 'La Bomba',
         description: 'Sistema de validación y despacho de combustible por QR',
         theme_color: '#0f172a',
         background_color: '#f8fafc',

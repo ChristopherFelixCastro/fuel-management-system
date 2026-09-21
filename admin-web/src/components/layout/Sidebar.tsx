@@ -7,8 +7,9 @@ import {
   Truck,
   Building2,
   ClipboardCheck,
+  ClipboardList,
+  FileText,
   Fuel,
-  ShieldAlert,
   FileBarChart,
   AlertTriangle,
 } from 'lucide-react';
@@ -24,10 +25,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
 
   const navItems = [
     {
+      to: '/my-requests',
+      label: 'Mis Solicitudes',
+      icon: <FileText className="w-5 h-5" />,
+      allowedRoles: ['SOLICITANTE'],
+    },
+    {
       to: '/dashboard',
       label: 'Dashboard Ejecutivo',
       icon: <LayoutDashboard className="w-5 h-5" />,
-      allowedRoles: ['ADMINISTRADOR', 'SUPERVISOR', 'AUDITOR', 'SOLICITANTE', 'DESPACHADOR'],
+      allowedRoles: ['ADMINISTRADOR', 'SUPERVISOR', 'AUDITOR', 'DESPACHADOR'],
+    },
+    {
+      to: '/requests',
+      label: 'Gestión de Solicitudes',
+      icon: <ClipboardList className="w-5 h-5" />,
+      allowedRoles: ['ADMINISTRADOR', 'SUPERVISOR'],
     },
     {
       to: '/users',
@@ -104,36 +117,40 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
 
       {/* Sidebar container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-40 w-64 bg-[#062d4f] text-white flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-40 w-64 bg-slate-950 text-white flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand */}
-        <div className="h-16 flex items-center gap-3 px-6 border-b border-[#0f436e] bg-[#04213a]">
-          <div className="p-2 bg-[#087e8b] rounded-lg shadow-sm">
-            <Fuel className="w-5 h-5 text-white" />
+        <div className="h-16 flex items-center gap-3 px-5 border-b border-slate-800 bg-slate-950">
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-slate-700 bg-white p-1 shadow-sm">
+            <img
+              src="/GasolinaLogo.png"
+              alt="Logo de La Bomba"
+              className="h-full w-full object-contain"
+            />
           </div>
-          <div>
-            <h1 className="font-bold text-sm leading-tight text-white tracking-wide">
-              Combustible PWA
+          <div className="min-w-0">
+            <h1 className="truncate font-bold text-base leading-tight text-white tracking-tight">
+              La Bomba
             </h1>
-            <span className="text-[11px] text-[#75c5eb] font-medium tracking-wider uppercase">
-              Portal Administrativo
+            <span className="text-[10px] text-slate-400 font-semibold tracking-[0.14em] uppercase">
+              Administración
             </span>
           </div>
         </div>
 
         {/* User preview banner in sidebar */}
         {user && (
-          <div className="p-4 mx-3 my-3 bg-[#0a3a63] rounded-lg border border-[#144f82]">
-            <p className="text-xs text-slate-300 font-medium truncate">{user.fullName}</p>
+          <div className="p-4 mx-3 my-3 bg-slate-900 rounded-xl border border-slate-800">
+            <p className="text-xs text-slate-200 font-semibold truncate">{user.fullName}</p>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[#087e8b] text-white">
                 {user.role}
               </span>
               {user.stationName && (
                 <span className="text-[10px] text-slate-300 truncate" title={user.stationName}>
-                  📍 {user.stationName}
+                  {user.stationName}
                 </span>
               )}
             </div>
@@ -155,14 +172,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? 'bg-[#087e8b] text-white shadow-sm'
-                    : 'text-slate-300 hover:bg-[#0a3a63] hover:text-white'
+                    : 'text-slate-300 hover:bg-slate-900 hover:text-white'
                 }`
               }
             >
               {item.icon}
               <span className="flex-1 truncate">{item.label}</span>
               {item.adminOnly && (
-                <span className="text-[9px] bg-[#04213a] text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-800">
+                <span className="text-[9px] bg-slate-950 text-cyan-200 px-1.5 py-0.5 rounded border border-cyan-800">
                   Admin
                 </span>
               )}
@@ -170,16 +187,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
           ))}
         </div>
 
-        {/* Footer info in sidebar */}
-        <div className="p-4 border-t border-[#0f436e] bg-[#04213a]/60 text-xs text-slate-400">
-          <div className="flex items-center gap-2 mb-1">
-            <ShieldAlert className="w-3.5 h-3.5 text-[#0f9aa8]" />
-            <span className="font-medium text-slate-300">Reto Tendencia · Angel</span>
-          </div>
-          <p className="text-[11px] text-slate-400 leading-tight">
-            Portal web para control de entidades y dashboard ejecutivo.
-          </p>
-        </div>
       </aside>
     </>
   );

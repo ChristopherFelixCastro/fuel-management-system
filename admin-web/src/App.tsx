@@ -12,6 +12,18 @@ import { Closures } from './pages/Closures';
 import { Reports } from './pages/Reports';
 import { Alerts } from './pages/Alerts';
 import { InventoryOperations } from './pages/InventoryOperations';
+import { MyRequests } from './pages/MyRequests';
+import { RequestsManagement } from './pages/RequestsManagement';
+import { useAuth } from './context/AuthContext';
+
+
+const HomeRedirect: React.FC = () => {
+  const { user } = useAuth();
+  if (user?.role === 'SOLICITANTE') {
+    return <Navigate to="/my-requests" replace />;
+  }
+  return <Navigate to="/dashboard" replace />;
+};
 
 export const App: React.FC = () => {
   return (
@@ -28,10 +40,37 @@ export const App: React.FC = () => {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route index element={<HomeRedirect />} />
+
+        {/* Mis Solicitudes (Portal del Solicitante) */}
+        <Route
+          path="my-requests"
+          element={
+            <ProtectedRoute allowedRoles={['SOLICITANTE']}>
+              <MyRequests />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Dashboard Ejecutivo */}
-        <Route path="dashboard" element={<Dashboard />} />
+        <Route
+          path="dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['ADMINISTRADOR', 'SUPERVISOR', 'AUDITOR', 'DESPACHADOR']}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Gestión de Solicitudes (Supervisor y Administrador) */}
+        <Route
+          path="requests"
+          element={
+            <ProtectedRoute allowedRoles={['ADMINISTRADOR', 'SUPERVISOR']}>
+              <RequestsManagement />
+            </ProtectedRoute>
+          }
+        />
 
         {/* CRUD Usuarios (Solo ADMINISTRADOR) */}
         <Route
@@ -116,7 +155,7 @@ export const App: React.FC = () => {
       </Route>
 
       {/* Fallback general */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<HomeRedirect />} />
     </Routes>
   );
 };
