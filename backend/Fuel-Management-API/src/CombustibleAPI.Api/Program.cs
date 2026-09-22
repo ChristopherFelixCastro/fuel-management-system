@@ -124,7 +124,12 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
     });
 }
 
-app.UseHttpsRedirection();
+// En Render, HTTPS termina en el proxy del proveedor.
+// El contenedor recibe HTTP interno; evitamos redirecciones duplicadas.
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors("ClientesAutorizados");
 
 app.UseAuthentication();

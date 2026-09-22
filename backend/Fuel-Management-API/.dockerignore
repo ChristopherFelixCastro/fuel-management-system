@@ -1,0 +1,17 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/.git/
+**/node_modules/
+**/dist/
+
+**/.env
+**/.env.*
+**/secrets.json
+**/appsettings.Development.json
+**/appsettings.Production.json
+
+*.dump
+*.bak
+*.log
