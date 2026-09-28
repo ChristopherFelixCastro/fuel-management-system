@@ -14,6 +14,7 @@ import { Alerts } from './pages/Alerts';
 import { InventoryOperations } from './pages/InventoryOperations';
 import { MyRequests } from './pages/MyRequests';
 import { RequestsManagement } from './pages/RequestsManagement';
+import { PublicTicket } from './pages/PublicTicket';
 import { useAuth } from './context/AuthContext';
 
 
@@ -30,6 +31,9 @@ export const App: React.FC = () => {
     <Routes>
       {/* Ruta pública de autenticación */}
       <Route path="/login" element={<Login />} />
+
+      {/* Ruta pública para visualización segura del ticket QR */}
+      <Route path="/ticket/:token" element={<PublicTicket />} />
 
       {/* Rutas protegidas bajo el Layout principal */}
       <Route

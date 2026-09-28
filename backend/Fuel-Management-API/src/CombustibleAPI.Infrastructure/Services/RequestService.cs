@@ -8,6 +8,8 @@ using CombustibleAPI.Infrastructure.Persistence.DbFunctions;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
+using CombustibleAPI.Infrastructure.Notifications;
+
 namespace CombustibleAPI.Infrastructure.Services;
 
 public sealed class RequestService : IRequestService
@@ -16,17 +18,20 @@ public sealed class RequestService : IRequestService
     private readonly SqlFunctionsRepository _sql;
     private readonly IAuditService _audit;
     private readonly IQrCodeService _qrCodeService;
+    private readonly IPublicTicketService _publicTicketService;
 
     public RequestService(
         AppDbContext context,
         SqlFunctionsRepository sql,
         IAuditService audit,
-        IQrCodeService qrCodeService)
+        IQrCodeService qrCodeService,
+        IPublicTicketService publicTicketService)
     {
         _context = context;
         _sql = sql;
         _audit = audit;
         _qrCodeService = qrCodeService;
+        _publicTicketService = publicTicketService;
     }
 
     public async Task<RequestResponseDto> CrearAsync(
@@ -409,6 +414,7 @@ public sealed class RequestService : IRequestService
     {
         var s = await _context.Solicitudes
             .Include(x => x.Vehiculo)
+            .Include(x => x.Empleado)
             .FirstOrDefaultAsync(x => x.Id == id, ct)
             ?? throw ApiException.NotFound("Solicitud");
 
@@ -518,6 +524,44 @@ public sealed class RequestService : IRequestService
 
             FechaEmision = DateTime.UtcNow,
             FechaExpiracion = dto.FechaExpiracion
+        });
+
+        // 1. Generar acceso público seguro mediante token opaco (SHA-256 + Nonce)
+        await _publicTicketService.GenerarTokenAccesoAsync(ticketId, dto.FechaExpiracion, ct);
+
+        // 2. Evaluar datos de contacto del Empleado beneficiario (solicitud.Empleado)
+        var email = s.Empleado?.Email?.Trim();
+        var telefono = s.Empleado?.Telefono?.Trim();
+
+        bool emailValido = !string.IsNullOrWhiteSpace(email) &&
+                           email.Contains('@') &&
+                           email.IndexOf('.', email.IndexOf('@')) > 0;
+
+        _context.NotificacionesEntrega.Add(new NotificacionEntrega
+        {
+            Id = Guid.NewGuid(),
+            TicketId = ticketId,
+            TipoEvento = "TICKET_APROBADO",
+            Canal = "EMAIL",
+            Destinatario = emailValido ? email : null,
+            Estado = emailValido ? "PENDIENTE" : "OMITIDA",
+            UltimoError = emailValido ? null : (string.IsNullOrWhiteSpace(email) ? "EMAIL_NO_DISPONIBLE" : "EMAIL_INVALIDO"),
+            FechaCreacion = DateTime.UtcNow
+        });
+
+        var telefonoE164 = InfobipSmsSender.NormalizarTelefonoE164(telefono);
+        bool telefonoValido = telefonoE164 is not null;
+
+        _context.NotificacionesEntrega.Add(new NotificacionEntrega
+        {
+            Id = Guid.NewGuid(),
+            TicketId = ticketId,
+            TipoEvento = "TICKET_APROBADO",
+            Canal = "SMS",
+            Destinatario = telefonoValido ? telefonoE164 : null,
+            Estado = telefonoValido ? "PENDIENTE" : "OMITIDA",
+            UltimoError = telefonoValido ? null : (string.IsNullOrWhiteSpace(telefono) ? "TELEFONO_NO_DISPONIBLE" : "TELEFONO_INVALIDO"),
+            FechaCreacion = DateTime.UtcNow
         });
 
         s.Estado = "APROBADA";

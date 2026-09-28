@@ -76,6 +76,28 @@ public class RequestServiceTests
         }
     }
 
+    private sealed class FakePublicTicket : IPublicTicketService
+    {
+        public Task<(string TokenReal, string Nonce, string TokenHash)> GenerarTokenAccesoAsync(
+            Guid ticketId,
+            DateTime fechaExpiracionTicket,
+            CancellationToken ct)
+            => Task.FromResult(("fake-token-real-64chars000000000000000000000000000000000000000000000000", "fake-nonce", "fake-hash"));
+
+        public string ReconstruirToken(Guid ticketId, string nonce)
+            => "fake-token-real-64chars000000000000000000000000000000000000000000000000";
+
+        public Task<CombustibleAPI.Application.Dtos.PublicTickets.PublicTicketDto> ObtenerTicketPublicoAsync(
+            string token,
+            CancellationToken ct)
+            => Task.FromResult(new CombustibleAPI.Application.Dtos.PublicTickets.PublicTicketDto());
+
+        public Task<byte[]> ObtenerQrPngPublicoAsync(
+            string token,
+            CancellationToken ct)
+            => Task.FromResult(new byte[] { 0x89, 0x50, 0x4E, 0x47 });
+    }
+
     private static AppDbContext Context()
     {
         return new AppDbContext(
@@ -91,7 +113,8 @@ public class RequestServiceTests
             context,
             new SqlFunctionsRepository(),
             new Audit(),
-            new QrCode());
+            new QrCode(),
+            new FakePublicTicket());
     }
 
     private static async Task<(

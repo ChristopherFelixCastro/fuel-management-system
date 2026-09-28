@@ -1070,3 +1070,27 @@ export const RequestService = {
 
   getTicketQr: (ticketId: string) => apiDownload(`/tickets/${ticketId}/qr`),
 };
+
+export interface PublicTicketData {
+  numeroTicket: string;
+  empleado: string;
+  codigoEmpleado?: string | null;
+  vehiculo: string;
+  placa: string;
+  ficha: string;
+  tipoCombustible: string;
+  cantidadAutorizada: number;
+  estacion: string;
+  fechaExpiracion: string;
+  estado: string;
+  mensajeEstado: string;
+  permiteDespacho: boolean;
+}
+
+export const PublicTicketService = {
+  getByToken: (token: string) =>
+    apiRequest<PublicTicketData>(`/public/tickets/${token}`),
+
+  getQrImage: (token: string) =>
+    apiDownload(`/public/tickets/${token}/qr`),
+};

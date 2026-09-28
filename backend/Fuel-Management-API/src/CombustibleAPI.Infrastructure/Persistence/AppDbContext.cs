@@ -28,6 +28,8 @@ public class AppDbContext : DbContext
     public DbSet<Despacho> Despachos => Set<Despacho>();
     public DbSet<MovimientoInventario> MovimientosInventario => Set<MovimientoInventario>();
     public DbSet<CierreDiario> CierresDiarios => Set<CierreDiario>();
+    public DbSet<TicketAccesoPublico> TicketsAccesoPublico => Set<TicketAccesoPublico>();
+    public DbSet<NotificacionEntrega> NotificacionesEntrega => Set<NotificacionEntrega>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

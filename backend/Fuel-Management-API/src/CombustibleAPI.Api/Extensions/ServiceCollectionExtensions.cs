@@ -1,6 +1,7 @@
 using CombustibleAPI.Application.Common;
 using CombustibleAPI.Application.Interfaces;
 using CombustibleAPI.Application.Services;
+using CombustibleAPI.Infrastructure.Notifications;
 using CombustibleAPI.Infrastructure.Persistence;
 using CombustibleAPI.Infrastructure.Persistence.DbFunctions;
 using CombustibleAPI.Infrastructure.Security;
@@ -16,6 +17,10 @@ public static class ServiceCollectionExtensions
         // ---- Configuración fuertemente tipada ----
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.Configure<QrSecurityOptions>(configuration.GetSection(QrSecurityOptions.SectionName));
+        services.Configure<NotificationOptions>(configuration.GetSection(NotificationOptions.SectionName));
+        services.Configure<PublicTicketOptions>(configuration.GetSection(PublicTicketOptions.SectionName));
+        services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
+        services.Configure<SmsOptions>(configuration.GetSection(SmsOptions.SectionName));
 
         // ---- Persistencia ----
         var connectionString = configuration.GetConnectionString("Default");
@@ -31,6 +36,17 @@ public static class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+        // ---- HttpClients tipados para Notificaciones Externas ----
+        services.AddHttpClient<IEmailSender, BrevoEmailSender>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(15);
+        });
+
+        services.AddHttpClient<ISmsSender, InfobipSmsSender>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(15);
+        });
+
         // ---- Servicios de aplicación / infraestructura ----
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
@@ -44,12 +60,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IClosureService, ClosureService>();
         services.AddScoped<IRequestService, RequestService>();
         services.AddScoped<IQrCodeService, QrCodeService>();
+        services.AddScoped<IPublicTicketService, PublicTicketService>();
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IReportExportService, ReportExportService>();
         services.AddScoped<IAlertService, AlertService>();
         services.AddScoped<IDashboardService, DashboardService>();
 
-
+        // ---- Background Worker para Notificaciones Outbox ----
+        services.AddHostedService<NotificationBackgroundWorker>();
 
         return services;
     }

@@ -64,7 +64,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = jwtOptions.Audience,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key ?? "")),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(string.IsNullOrWhiteSpace(jwtOptions.Key) ? "FallbackTestingJwtKeyMustBeAtLeast32BytesLong!" : jwtOptions.Key)),
         ValidateLifetime = true,
         ClockSkew = TimeSpan.FromSeconds(30) // tolerancia mínima, acceso token es de vida corta
     };
