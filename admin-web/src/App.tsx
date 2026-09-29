@@ -16,14 +16,11 @@ import { MyRequests } from './pages/MyRequests';
 import { RequestsManagement } from './pages/RequestsManagement';
 import { PublicTicket } from './pages/PublicTicket';
 import { useAuth } from './context/AuthContext';
-
+import { getDefaultRouteForRole } from './utils/navigation';
 
 const HomeRedirect: React.FC = () => {
   const { user } = useAuth();
-  if (user?.role === 'SOLICITANTE') {
-    return <Navigate to="/my-requests" replace />;
-  }
-  return <Navigate to="/dashboard" replace />;
+  return <Navigate to={getDefaultRouteForRole(user?.role)} replace />;
 };
 
 export const App: React.FC = () => {

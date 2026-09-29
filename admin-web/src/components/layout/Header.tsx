@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Menu,
   LogOut,
@@ -16,6 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMobileMenu,
 }) => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -108,6 +110,7 @@ export const Header: React.FC<HeaderProps> = ({
           setIsLoggingOut(true);
           try {
             await logout();
+            navigate('/login', { replace: true, state: null });
           } finally {
             setIsLoggingOut(false);
             setShowLogoutConfirm(false);

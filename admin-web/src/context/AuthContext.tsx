@@ -26,7 +26,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   isMock: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<AuthUser>;
   logout: () => Promise<void>;
   hasRole: (roles: UserRole[]) => boolean;
 }
@@ -194,6 +194,7 @@ export const AuthProvider: React.FC<{
 
         saveUser(authenticatedUser);
         setUser(authenticatedUser);
+        return authenticatedUser;
       } catch (error) {
         clearSession();
         throw error;

@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { UserRole } from '../../types';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { ShieldAlert, ArrowLeft } from 'lucide-react';
+import { getDefaultRouteForRole } from '../../utils/navigation';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -40,11 +41,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           Tu rol actual (<strong>{user.role}</strong>) no tiene los permisos requeridos para acceder a esta sección administrativa.
         </p>
         <Link
-          to="/dashboard"
+          to={getDefaultRouteForRole(user.role)}
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#087e8b] text-white text-sm font-medium rounded-lg hover:bg-[#066570] transition shadow-sm"
         >
           <ArrowLeft className="w-4 h-4" />
-          Volver al Dashboard
+          {user.role === 'SOLICITANTE' ? 'Volver a Mis Solicitudes' : 'Volver al Dashboard'}
         </Link>
       </div>
     );
